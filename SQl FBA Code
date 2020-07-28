@@ -1,0 +1,265 @@
+	Adjust the web.config of the Central Administration site
+· Open the Central Administration site's web.config file
+· Find the </configSections> entry
+· Paste the following XML directly below it
+	 
+	<connectionStrings>
+	    <clear />
+	    <add name="AspNetSqlMembershipProvider"
+	connectionString="data source=sql.sharepoint.com;Integrated Security=SSPI;Initial Catalog=aspnetdb" 
+	providerName="System.Data.SqlClient" />
+	</connectionStrings>
+·  
+· Find the <roleManager> entry
+· Replace the below  with from <roleManager> to </Membership>
+	 
+	<roleManager enabled="true" 
+	   cacheRolesInCookie="false" 
+	   cookieName=".ASPXROLES" 
+	   cookieTimeout="30" 
+	   cookiePath="/" 
+	   cookieRequireSSL="false" 
+	   cookieSlidingExpiration="true" 
+	   cookieProtection="All" 
+	   defaultProvider="AspNetWindowsTokenRoleProvider" 
+	   createPersistentCookie="false" 
+	   maxCachedResults="25">
+	    <providers>
+	        <clear />
+	        <add connectionStringName="AspNetSqlMembershipProvider" 
+	         applicationName="/" 
+	         name="SqlRole" 
+	         type="System.Web.Security.SqlRoleProvider, System.Web, Version=2.0.0.0,
+	Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+	        <add applicationName="/" 
+	         name="AspNetWindowsTokenRoleProvider" 
+	         type="System.Web.Security.WindowsTokenRoleProvider, System.Web, Version=2.0.0.0,
+	Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+	    </providers>
+	</roleManager>
+	<membership defaultProvider="SqlMember" 
+	   userIsOnlineTimeWindow="15" hashAlgorithmType="">
+	    <providers>
+	        <clear />
+	        <add connectionStringName="AspNetSqlMembershipProvider" 
+	         enablePasswordRetrieval="false" 
+	         enablePasswordReset="true" 
+	         requiresQuestionAndAnswer="true" 
+	         passwordAttemptWindow="10" 
+	         applicationName="/" 
+	         requiresUniqueEmail="false" 
+	         passwordFormat="Hashed" 
+	         name="SqlMember" 
+	         type="System.Web.Security.SqlMembershipProvider, System.Web, Version=2.0.0.0,
+	Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+	    </providers>
+	</membership>
+·  
+· Double check whether the <membership> and <rolemanager> entries only exist ones. Delete any double entries.
+· Paste the following XML below the <PeoplePickerWildcards> entry
+	 
+	<clear />
+	<add key="AspNetSqlMembershipProvider" value="%" />
+	<add key="SqlMember" value="%"/>
+	<add key="SqlRole" value="%"/>
+	 
+	 
+	Adjust the web.config of the Security Token Service (STS) virtual directory
+	NB: you will need to make the changes to the Security Token Service virtual directory on each server hosting either Central Administration or the claims based web application
+· Open the Security Token Service (STS) virtual directory's web.config file
+· Find the </system.net> entry
+· Paste the following XML directly below it
+	 
+	<connectionStrings>
+	   <clear />
+	   <add name="AspNetSqlMembershipProvider"
+	connectionString="data source=sql.sharepoint.com;Integrated Security=SSPI;Initial Catalog=aspnetdb" 
+	providerName="System.Data.SqlClient" />
+	</connectionStrings>
+	 
+· Add a <system.web> entry directly below the </connectionStrings>
+· Paste the following XML directly below the <system.web> entry
+	<membership>
+	   <providers>
+	     <add connectionStringName="AspNetSqlMembershipProvider" 
+	        enablePasswordRetrieval="false" 
+	        enablePasswordReset="true" 
+	        requiresQuestionAndAnswer="true" 
+	        passwordAttemptWindow="10" 
+	        applicationName="/" 
+	        requiresUniqueEmail="false" 
+	        passwordFormat="Hashed" 
+	        name="SqlMember" 
+	        type="System.Web.Security.SqlMembershipProvider, System.Web, Version=2.0.0.0, 
+	Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+	   </providers>
+	</membership>
+	<roleManager enabled="true">
+	   <providers>
+	      <add connectionStringName="AspNetSqlMembershipProvider"
+	applicationName="/" 
+	         name="SqlRole" 
+	         type="System.Web.Security.SqlRoleProvider, System.Web, Version=2.0.0.0, 
+	Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+	   </providers>
+	</roleManager>
+	 
+· Add a </system.web> entry directly below it
+	 
+	Adjust the web.config of the claims based WEB APPLICATION
+· Open the claims based web application's web.config file
+· Find the </configSections> entry
+· Paste the following XML directly below it
+	<connectionStrings>
+	   <clear />
+	   <add name="AspNetSqlMembershipProvider"
+	connectionString="data source=sql.sharepoint.com;Integrated Security=SSPI;Initial Catalog=aspnetdb" 
+	providerName="System.Data.SqlClient" />
+	</connectionStrings>
+	 
+· Locate the <membership> entry
+· Replace everything from <membership> to </membership> with the following XML
+	<membership defaultProvider="i" 
+	   userIsOnlineTimeWindow="15" 
+	   hashAlgorithmType=""> 
+	   <providers> 
+	      <clear /> 
+	      <add connectionStringName="AspNetSqlMemberShipProvider" 
+	         enablePasswordRetrieval="false" 
+	         enablePasswordReset="true" 
+	         requiresQuestionAndAnswer="true" 
+	         passwordAttemptWindow="10" 
+	         applicationName="/" 
+	         requiresUniqueEmail="false" 
+	         passwordFormat="Hashed" 
+	         name="SqlMember" 
+	         type="System.Web.Security.SqlMembershipProvider, System.Web, Version=2.0.0.0, 
+	Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" /> 
+	     <add name="i" 
+	        type="Microsoft.SharePoint.Administration.Claims.SPClaimsAuthMembershipProvider, 
+	Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" /> 
+	   </providers> 
+	</membership>
+	 
+· Locate the <roleManager> entry
+· Replace everything from <roleManager> to </roleManager> with the following XML:
+	<roleManager enabled="true" 
+	   cacheRolesInCookie="false" 
+	   cookieName=".ASPXROLES" 
+	   cookieTimeout="30" 
+	   cookiePath="/" 
+	   cookieRequireSSL="false" 
+	   cookieSlidingExpiration="true" 
+	   cookieProtection="All" 
+	   defaultProvider="c" 
+	   createPersistentCookie="false" 
+	   maxCachedResults="25"> 
+	      <providers> 
+	         <clear /> 
+	         <add connectionStringName="AspNetSqlMemberShipProvider" 
+	            applicationName="/" 
+	            name="AspNetSqlRoleProvider" 
+	            type="System.Web.Security.SqlRoleProvider, System.Web, Version=2.0.0.0, 
+	Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" /> 
+	         <add applicationName="/" 
+	            name="SqlRole" 
+	            type="System.Web.Security.WindowsTokenRoleProvider, System.Web, Version=2.0.0.0, 
+	Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" /> 
+	         <add name="c" type="Microsoft.SharePoint.Administration.Claims.SPClaimsAuthRoleProvider, 
+	Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" /> 
+	   </providers> 
+	</roleManager> 
+	 
+· Paste the following XML below the PeoplePickerWildcards entry
+	<clear />
+	<add key="AspNetSqlMembershipProvider" value="%" />
+	<add key="SqlMember" value="%"/>
+	<add key="SqlRole" value="%"/>
+	 
+	 
+	From <http://sharepointchick.com/archive/2010/05/07/configuring-claims-and-forms-based-authentication-for-use-with-a.aspx> 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	http://blogs.technet.com/b/ptsblog/archive/2013/09/20/configuring-sharepoint-2013-forms-based-authentication-with-sqlmembershipprovider.aspx
+	 
+	Web.config for Web Application:
+	 
+	* TO BE ADDED ABOVE <SYSTEM.WEB>
+	<connectionStrings>
+	  <add name="SqlAuth" 
+	  connectionString="server=SQL;database=aspnetdb;Trusted_Connection=true" />
+	</connectionStrings>
+	 
+	* ADD BELOW the lone ending
+	<add name="i"
+	 
+	<add name="SQLMP" connectionStringName="SqlAuth" applicationName="/" type="System.Web.Security.SqlMembershipProvider, System.Web, Version=2.0.50727.4927, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+	 
+	* ADD BELOW the lone ending
+	<add name="c" 
+	 
+	<add name="SQLRP" connectionStringName="SqlAuth" applicationName="/" type="System.Web.Security.SqlRoleProvider, System.Web, Version=2.0.50727.4927, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+	 
+	 
+	 
+	 
+	Web.config for Central Administration:
+	 
+	* TO BE ADDED ABOVE <SYSTEM.WEB>
+	<connectionStrings>
+	<add name="SqlAuth" connectionString="Data Source=SQL;Trusted_Connection=true;Initial Catalog=aspnetdb;" />
+	</connectionStrings>
+	 
+	 
+	* Remove :
+	<roleManager>
+	<providers>
+	</providers>
+	</roleManager>
+	<membership>
+	<providers>
+	</providers>
+	</membership>
+	 
+	* AND add this:
+	<roleManager enabled="true" defaultProvider="AspNetWindowsTokenRoleProvider">
+	<providers>
+	<add name="SQLRoleManager" connectionStringName="SqlAuth" applicationName="/" type="System.Web.Security.SqlRoleProvider, System.Web, Version=2.0.50727.4927, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+	</providers>
+	</roleManager>
+	<membership>
+	<providers>
+	<add name="SQLMembershipProvider"  connectionStringName="SqlAuth" applicationName="/" type="System.Web.Security.SqlMembershipProvider, System.Web, Version=2.0.50727.4927, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+	</providers>
+	</membership>
+	 
+	 
+	 
+	 
+	Web.config for Security token service:
+	 
+	* Add this between </system.net> & </configuration> (ABOVE LAST LINE in FILE).
+	<connectionStrings>
+	  <add name="SqlAuth" connectionString="server=DC;database=aspnetdb;Trusted_Connection=true" />
+	</connectionStrings>
+	 
+	<system.web>
+	  <membership>
+	   <providers>
+	      <add name="SQLMP" connectionStringName="SqlAuth" applicationName="/" type="System.Web.Security.SqlMembershipProvider, System.Web, Version=2.0.50727.4927, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+	    </providers>
+	  </membership>
+	 
+	<roleManager enabled="true" > 
+	  <providers>
+	  <add name="SQLRP" connectionStringName="SqlAuth" applicationName="/" type="System.Web.Security.SqlRoleProvider, System.Web, Version=2.0.50727.4927, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+	 </providers>
+	</roleManager>
+	</system.web>  
