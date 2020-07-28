@@ -1,0 +1,28 @@
+We ran the following set of commands to check the Group Specific  users for Web Application:
+ 
+· $users = get-spuser -web http://spdev3 -Limit ALL
+	Output: 
+	We got list of all the users from the provided web application.
+ 
+· $users = get-spuser -web http://spdev3 -Group "Vendor"
+	Output:
+	We got users only from Group Name “Vendor”
+ 
+Thus below is the modified script which you can run.
+ 
+	$url ="http://spdev3" 
+	$oldprovidername = "ltp" 
+	$newprovidername = "fbamembershipvcms" 
+	$users = get-spuser -web $url -Group "Group Name" 
+	foreach($useriteration in $users) 
+	{ 
+	    $a=@() 
+	    $userlogin = $useriteration.UserLogin 
+	    if( $userlogin.StartsWith("i:0#.w|")) 
+	    { 
+	    $a = $userlogin.split("\") 
+	    $username = $a[1] 
+	    $user = Get-SPUser -web "$url" -Identity "i:0#.w|$oldprovidername\$username" 
+	    Move-SPUser -IgnoreSID -Confirm:$false -Identity $user -NewAlias "i:0#.f|$newprovidername|$username" 
+	    }  
+	}
