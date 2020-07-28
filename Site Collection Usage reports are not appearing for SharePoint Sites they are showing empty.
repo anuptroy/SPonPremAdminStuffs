@@ -1,0 +1,87 @@
+Summary:
+
+ 
+
+Since Usage reports are generated through the search service, we checked if the search proxy is set to default association with the problematic web app.
+Post confirming this we checked if the search crawling was functional as expected.
+Then we checked if the tenant config was using the search analytics services.
+
+We ran below commands to confirm the same 
+$SSP = Get-SPEnterpriseSearchServiceApplicationProxy
+$tenantConfig = $SSP.GetAnalyticsTenantConfiguration([Guid]::Empty)
+$event = $tenantConfig.EventTypeDefinitions | where-object { $_.EventTypeId -eq  1 }
+$event
+
+AppEventTypeId              : 00000000-0000-0000-0000-000000000000
+
+EventTypeId                 : 1
+
+EventName                   : Views
+
+LifeTimeManagedPropertyName : ViewsLifeTime
+
+RecentManagedPropertyName   : ViewsRecent
+
+ApplicationName             :
+
+RecommendationWeight        : 1
+
+RelevanceWeight             : 1
+
+RecentPopularityTimeframe   : 14
+
+AggregationType             : Count, UniqueUsers
+
+Rollups                     : SiteSubscriptionId, SiteId, ScopeId
+
+TailTrimming                : 0
+
+Options                     : AllowAnonymousWrite
+
+IsReadOnly                  : False
+
+Checked the tail trimming set to 0, which is ideal configuration.
+ 
+
+SharePoint has a timer job that collects the information about usage and then dumps the data into event store. 
+So we ran below timer jobs and started its analysis with below commands 
+$a = Get-SPTimerJob -Type Microsoft.Office.Server.Search.Analytics.AnalyticsJobDefinition
+$sa = $a.GetAnalysis("Microsoft.Office.Server.Search.Analytics.SearchAnalyticsJob")
+$sa.StartAnalysis()
+Wait for the search analytics job to finish. To check the status of the search analytics job, type the following command: 
+$sa.GetAnalysisInfo()
+
+The state should show running, and after it finishes, state should change to ‘Stopped’ and progress 100.
+The usage events are added to the Event store within a 10 minute interval. To push the usage events to the Event store, type the following commands: 
+$tj = Get-SPTimerJob -Identity ("job-usage-log-file-import")
+$tj.RunNow()
+
+Since the data is dumped in the event store we wanted to verify that the usage events are recorded correctly.  Found the Event Store was empty. 
+C:\Program Files\Microsoft Office Servers\15.0\Data\Office Server\Analytics_<GUID>\EventStore
+Since the output from Search analytics is used by Usage analytics to map usage events against the actual items in the search index. 
+   $a = Get-SPTimerJob -Type Microsoft.Office.Server.Search.Analytics.AnalyticsJobDefinition
+$sa = $a.GetAnalysis("Microsoft.Office.Server.Search.Analytics.SearchAnalyticsJob")
+$sa.StartAnalysis()
+
+Waited for the search analytics job to finish. To check the status of the search analytics job, type the following command: 
+$sa.GetAnalysisInfo()
+
+The process showed 100 meaning the state was working fine.
+Checked below timer jobs and found all were running successfully 
+   Usage Analytics Timer Job for Search Service Application Search Service Application
+   Microsoft SharePoint Foundation Usage Data Import 
+   Microsoft SharePoint Foundation Usage Data Processing
+   Usage Analytics Timer Job for Search Application Search Service Application
+   Analytics Event Store Retention
+ 
+
+Despite everything was running and collecting information the event store was null, so we checked if the usage was enabled for the farm.
+
+Ran below command:  stsadm -o getproperty -pn usageprocessingenabled : Output: No
+
+Checked for the site collection; ; stsadm -o getproperty -pn usageprocessingenabled -url http://test-my.nisource.net. | Found it was disabled for the farm as wel.
+
+To enable we ran below commands : stsadm -o setproperty -pn usageprocessingenabled -pv yes -url http://test-my.nisource.net 
+ 
+
+We allowed the farm to compile the data as the process may take anywhere from 24 to 48 hours to complete and found usage and popularity trends were working.
