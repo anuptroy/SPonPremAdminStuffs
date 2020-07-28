@@ -1,0 +1,12 @@
+Unable to get Central Administration site up for SharePoint 2010. While running PSConfig you are getting following error " An exception of type System.Security.Cryptography.CryptographicException was thrown. Additional exception information: The data is invalid" 
+
+SOLUTION:
+
++"Exception - Failed to create the configuration database. An exception of type System.Security.Cryptography.CryptographicException was thrown. Additional exception information: The data is invalid."
++on registry we took backup of that entry
++Open your registry, go to "HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Shared Tools/Web Server Extensions/14.0/Secure/FarmAdmin" and remove the registry entry there.
++After this step we were able to move forward in PSConfig, at step 8: it throw another error: "an iis website by the name of SharePoint central administration v4 already exists on this server"
++IIS Site for Central Admin: We rename into SharePoint Central Administration v4_old
++then again ran PSConfig this time it ran successfully and Central Admin was accessible
++issue solved
+
