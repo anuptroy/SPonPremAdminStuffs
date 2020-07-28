@@ -1,0 +1,52 @@
+Check Windows Event Viewer:
+
+Got the following :
+Log Name:      Application
+Source:        Microsoft-SharePoint Products-SharePoint Foundation
+Date:          06/02/2020 09:35:34
+Event ID:      3760
+Task Category: Database
+Level:         Critical
+Keywords:      
+User:          DOMAIN\spfarmacc
+Computer:      SERVER.DOMAIN.COM
+Description:
+SQL Database 'SharePoint_AdminContent_GUID' on SQL Server instance 'SQLSRV01' not found. Additional error information from SQL Server is included below.
+
+Cannot open database "SharePoint_AdminContent_GUID" requested by the login. The login failed.
+Login failed for user 'SERVER\spFarmAcc'.
+Event Xml:
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-SharePoint Products-SharePoint Foundation" Guid="{6FB7E0CD-52E7-47DD-997A-241563931FC2}" />
+    <EventID>3760</EventID>
+    <Version>16</Version>
+    <Level>1</Level>
+    <Task>3</Task>
+    <Opcode>0</Opcode>
+    <Keywords>0x2000000000000000</Keywords>
+    <TimeCreated SystemTime="2020-02-06T09:35:34.811880300Z" />
+    <EventRecordID>1125886</EventRecordID>
+    <Correlation />
+    <Execution ProcessID="17420" ThreadID="21240" />
+    <Channel>Application</Channel>
+    <Computer>SERVER.DOMAN.COM</Computer>
+    <Security UserID="S-1-5-21-1954297494-2008128154-1095425035-3224" />
+  </System>
+  <EventData>
+    <Data Name="string0">SharePoint_AdminContent_GUID</Data>
+    <Data Name="string1">SQLSRV01</Data>
+    <Data Name="string2">Cannot open database "SharePoint_AdminContent_99ba14eb-f480-4c30-9fad-9b39eb3dd606" requested by the login. The login failed.
+Login failed for user 'DOMAIN\spFarmAcc'.</Data>
+  </EventData>
+</Event>
+
+
+_______
+
+Solution:
+
+All Databases in Mirror Server was became primary due to which sharepoint was not able to access DB
+
+Thus Manually made failover on SQLSRV01 for all DBs and make SQLSRV02 as a primary DB
+After which SP was accessible
