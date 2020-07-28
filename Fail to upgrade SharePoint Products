@@ -1,0 +1,31 @@
+SOLUTION:
+
+Below are the steps which we performed today in order to resolve the PSCONFIG error.
+ 
+· Ran the PSCONFIG command : 
+ 
+psconfig.exe -cmd upgrade -inplace b2b -force -wait -cmd installcheck no Installcheck
+ 
+Output : 
+--------------
+An exception of type Microsoft.SharePoint.Upgrade.SPUpgradeException was thrown.
+Additional exception information: Action 4.0.21.0 of Microsoft.SharePoint.Upgrade.SPIisWebSiteWssSequence failed.
+ 
+· Access the path : C:\inetpub\wwwroot\wss\VirtualDirectories\80 on CM0175 server
+· Found the wpresources folder was missing 
+· Copy\Paste the wpresources folder from other server : CM0217
+· R-run the PSCONFIG command : 
+ 
+psconfig.exe -cmd upgrade -inplace b2b -force -wait -cmd installcheck no Installcheck
+ 
+· The command failed again with the warning 
+· Performed an IISRESET
+· Re-ran the same PSCONFIG and this time it completed successfully
+· The server : CM0175 showed No Action Required in Central Admin
+· Ran the PSCONFIG command on the other server : CM0217
+· The command failed with the conflict error 
+· Cleared the configuration cache 
+· Re-ran the PSCONFIG command but it still failed 
+· Access the Central Admin >> Monitoring >> Review Job Definition
+· Found a onetime timer job was stuck hence deleted it
+· Re-ran the PSCONFIG command and it completed successfully
