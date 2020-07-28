@@ -1,0 +1,9 @@
+$hostConfig = Get-SPServiceHostconfig
+$hostConfig.Provision()
+$SPservice = Get-SPServiceApplication |?{$_.name -eq 'SecurityTokenServiceApplication'}
+$SPservice.Provision();
+
+Import-Module WebAdministration
+Stop-Website 'SharePoint Web Services'
+
+Start-Website 'SharePoint Web Services'
