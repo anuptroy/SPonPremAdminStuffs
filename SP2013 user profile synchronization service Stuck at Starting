@@ -1,0 +1,16 @@
+SOLUTION:
+
+To resolve it do the following things:
+• Stop the User Profile Synchronization Service
+• Open IIS (inetmgr)
+• Click on the server name and select Authentication
+• Selected Anonymous Authentication then choose Edit
+• Click the specific user, then enter “IUSR”
+• Add the service account to Local Admin group on the server
+• Add the service account to all the FIM groups
+• add the service account to the WSS_WSP and WSS_Admin_WPG group
+• Perform an IISRESET
+• Restart  user profile synchronization service
+• OR
+• Create a new User Profile Synchronization Service Application
+• Started the User Profile Synchronization Service
