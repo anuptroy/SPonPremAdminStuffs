@@ -1,0 +1,42 @@
+SOLUTION:
+
+
+
+https://blogs.msdn.microsoft.com/josrod/2013/04/19/partialchain-a-certificate-chain-could-not-be-built-to-a-trusted-root-authority/
+
+Obtain the “SharePoint Root Authority” certificate as a physical (.cer) file
+$rootCert = (Get-SPCertificateAuthority).RootCertificate 
+$rootCert.Export("Cert") | Set-Content C:\SPRootAuthority.cer -Encoding byte 
+
+Import the “SharePoint Root Authority” certificate to the Trusted Root Certification store on all of the SharePoint 2013 servers.
+1. Start > Run > MMC > Enter 
+2. File > Add/Remove Snap-in 
+3. Certificates > Add > Computer account > Next > Local computer > Finish > OK 
+4. Expand Certificates (Local Computer), expand Trusted Root Certification Authorities 
+5. Right-click Certificates > All tasks > Import 
+6. Next > Browse > navigate to and select C:\SPRootAuthority.cer > Open > Next > Next > Finish > OK
+7. IISRESET
+8. Site browse successfully 
+
+
+
+
+
+Conclusion:
+================================
+Issue 1: Site render issue
+· When we try to browse the site we get the error "Server Error in '/' Application." Some or all identity references could not be translated. 
+· During the troubleshooting we isolated that the issue is only with few sites and not with the Content database or the web application, we could notice the blank page on site settings was due to the feature mismatch.
+· So we first removed the content database from Compatibility mode and brought it to No Action Required.
+· Then completed PSCONFIG to iron out any inconsistency.
+· Then we added PortalSuperuser and PortalSuperReader account to the web application, which fixed the issue.
+ 
+ 
+Issue 2: Incorrect Login to system account
+· You mentioned that the issue we are facing is "suppose if we try to access the SharePoint site and if we log in using any user accounts it still shows as "System Account" and this is intermittent issue as sometimes it shows proper account."
+· To resolve above issue we followed below steps:
+	a. Open IIS on WEBServer where the problematic site was hosted
+	b. Under Advance Settings of the problematic site we have a setting called "Physical Path Credential" which by Default  should be "Application User (pass thru Authentication)".
+	c. But in our environment farm account was mentioned at the place.
+	d. We than made it to "Application User (pass thru Authentication)" and the issue was resolved.
+
