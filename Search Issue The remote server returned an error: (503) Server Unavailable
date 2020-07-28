@@ -1,0 +1,24 @@
+Solution: Type 1
+PSConfig.exe -cmd upgrade -inplace b2b -wait -cmd applicationcontent -install -cmd installfeatures -cmd secureresources -cmd services –install
+
+
+Error:
+Sorry, something went wrong 
+System.Net.WebException: The remote server returned an error: (503) Server Unavailable. 
+   at Microsoft.Office.Server.Search.Administration.SearchApi.RunOnServer[T](CodeToRun`1 remoteCode, CodeToRun`1 localCode, Boolean useCurrentSecurityContext, Int32 versionIn) 
+   at Microsoft.Office.Server.Search.Administration.SearchApi.GetVersion() 
+   at Microsoft.Office.Server.Search.Administration.SearchApi..ctor(SearchServiceApplication application) 
+   at Microsoft.Office.Server.Search.Administration.SearchApiFactory.CreateSearchApi(SearchServiceApplication application) 
+   at Microsoft.Office.Server.Search.Administration.SearchServiceApplication.get_SearchApi() 
+   at Microsoft.Office.Server.Search.Administration.ContentSourceCollection..ctor(Content parent) 
+   at Microsoft.Office.Server.Search.Administration.Content.get_ContentSources() 
+   at Microsoft.Office.Server.Search.Internal.UI.WebControls.ListContentSourcesControl.OnLoad(EventArgs e) 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint) 
+
