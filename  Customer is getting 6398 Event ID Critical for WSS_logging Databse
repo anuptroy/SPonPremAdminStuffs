@@ -1,0 +1,18 @@
+Resolution Summary:
+ 
+· http://< CA SERVER URL>/_admin/HealthReport.aspx  > go
+ 
+· Need to delete Usage Application and recreate it in order to solve this issue.
+ 
+· #Create the Usage and Health Service Application
+	New-SPUsageApplication -Name "Usage and Health Data Collection" -DatabaseServer SQL -DatabaseName "SP2010_Usage_And_Health_DB"
+ 
+· #Create the Proxy
+	$proxy = Get-SPServiceApplicationProxy | Where-Object {$_.typename -eq "Usage and Health Data Collection Proxy"}
+ 
+· #Provision
+	$proxy.Provision()
+ 
+More Information:
+ 
+· https://veronicageek.com/sharepoint/sharepoint-2016/create-the-usage-and-health-service-application-using-powershell/2018/03/ 
