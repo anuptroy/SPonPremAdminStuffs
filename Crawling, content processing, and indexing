@@ -1,0 +1,191 @@
+Crawling, content processing, and indexing
+ 
+Crawling
+- Types of crawling (Full, Incremental, continues).
+Crawling is the process of gathering the content for search. To retrieve information, the crawl component connects to the content sources by using the proper out-of-the-box or custom connectors. After retrieving the content, the Crawl Component passes crawled items to the Content Processing Component.
+There are three main types of SharePoint crawl: Full Crawl, Incremental Crawl and Continuous Crawl.
+· Full Crawl:
+	During a full crawl, the search engine crawls, processes and indexes every item in the content source, regardless of the previous crawl status.
+	 
+· Incremental Crawl:
+	In most cases, we do not need to (re-)index everything in the content source. Instead, incremental crawl enables the Crawler to crawl only the items which have been newly created or modiﬁed since the last crawl. Modification includes:
+	Content updates
+	Metadata updates
+	Permission updates
+	Deletes
+	When doing incremental crawl, the processes take much less time as the unchanged items are not processed.
+	 
+· Continues Crawl:
+	Similar to incremental, however significantly different, too, continuous crawl is a dynamic way of crawling SharePoint and Ofﬁce 365 content. When it is enabled on a content source, the Crawler checks the SharePoint change logs regularly (every 15 min, by default) and looks for recent changes. If there’s any item on the change log, the Crawler takes immediate action on it and sends to the Content Processor.
+	Please note, that continuous crawl is not real-time. However, it checks the SharePoint change logs often enough to be quick and provide good content freshness.
+	Also, please note that continuous crawl doesn’t fix any errors – therefore, we still need incremental crawl run on the content source (every 4 hours, by default) even if we use continuous crawl.
+	 
+	 
+ 
+ 
+- Best practices.
+ 
+· Use the default content access account to crawl most content- 
+	The default content access account is a domain account that you specify for the SharePoint 2013 Search service to use by default for crawling.
+ 
+· Use content sources effectively- 
+	One or more start addresses to crawl.
+ 
+	The type of content in the start addresses (such as SharePoint sites, file shares, or line-of-business data). You can specify only one type of content to crawl in a content source. For example, you would use one content source to crawl SharePoint sites, and a different content source to crawl file shares.
+ 
+	A crawl schedule and a crawl priority for full or incremental crawls that will apply to all of the content repositories that the content source specifies.
+ 
+· Using content sources to schedule crawls- 
+	You can edit the preconfigured content source Local SharePoint sites to specify a crawl schedule; it does not specify a crawl schedule by default. For any content source, you can start crawls manually, but we recommend that you schedule incremental crawls or enable continuous crawls to make sure that content is crawled regularly.
+ 
+· Use continuous crawls to help ensure that search results are fresh-
+	Enable continuous crawls is a crawl schedule option that you can select when you add or edit a content source of type SharePoint Sites. A continuous crawl crawls content that was added, changed, or deleted since the last crawl. A continuous crawl starts at predefined time intervals. The default interval is every 15 minutes, but you can set continuous crawls to occur at shorter intervals by using Windows PowerShell. Because continuous crawls occur so often, they help ensure search-index freshness, even for SharePoint content that is frequently updated.
+ 
+· Crawl the default zone of SharePoint web applications
+	When you crawl the default zone of a SharePoint web application, the query processor automatically maps and returns search-result URLs so that they are relative to the alternate access mapping (AAM) zone from which queries are performed. This makes it possible for users to readily view and open search results.
+ 
+	However, if you crawl a zone of a web application other than the default zone, the query processor does not map search-result URLs so that they are relative to the AAM zone from which queries are performed. Instead, search-result URLS will be relative to the non-default zone that was crawled. Because of this, users might not readily be able to view or open search results.
+ 
+- Difference between incremental and continues crawl.
+Incremental Crawls are search crawlers that gather the changes made since the last crawl. Incremental Crawls and Full Crawls cannot be run in parallel. They take charge and hog the whole crawler resource. This also makes it possible to have very outdated search results. An incremental crawl may not pick up changes that happen while the incremental crawl is running. Continuous Crawl fixes this problem. It may spawn several sessions in 15 minute intervals that will pick up the changes as well as the changes made during the Continuous Crawl. It will maximize the freshness of your search content.
+ 
+- Flow chart of crawling:
+ 
+
+Scenarios:-
+ 
+ 
+Symptoms 
+Crawl of some documents / folders fail with below error in the crawl log
+The crawl is throwing the below error
+The SharePoint server was moved to a different location. (Error from SharePoint site: HttpStatusCode Found The request failed with the error message: -- <html><head><title>Object moved</title></head><body> <h2>Object moved to <a href="http ://<sitename>/_layouts/error.aspx?ErrorText=Request%20timed%20out%2E">here</a>.</h2> </body></html> --. )
+ 
+Error observed in ULS log
+mssdmn.exe (0x18C4) 0x0EBC SharePoint Server Search Indexing dm1k Verbose Exception Type: System.Net.WebException *** Message: The request failed with the error message:  --  <html><head><title>Object moved</title></head><body>  <h2>Object moved to <a href="http://<siteurl>/_layouts/error.aspx?ErrorText=Request%20timed%20out%2E">here</a>.</h2>  </body></html>    --. *** StackTrace:    
+at System.Web.Services.Protocols.SoapHttpClientProtocol.ReadResponse(SoapClientMessage message, WebResponse response, Stream responseStream, Boolean asyncCall)     
+at System.Web.Services.Protocols.SoapHttpClientProtocol.Invoke(String methodName, Object[] parameters)  
+at Microsoft.Office.Server.Search.Internal.Protocols.SiteData.SiteData.GetContent(ObjectType objectType, String objectId, String folderUrl, String itemId, Boolean retrieveChildItems, Boolean securityOnly, String& lastItemIdOnPage)     
+Microsoft.Office.Server.Search.Internal.Protocols.SharePoint2006.SiteDataImpl.GetWSSContent(ObjectType objectType, String objectId, String folderUrl, String itemId, Boolean retrieveChildItems, Boolean securityOnly, String& lastItemIdOnPage)     
+atMicrosoft.Office.Server.Search.Internal.Protocols.SharePoint2006.CSTS3Helper.EnumerateListFolder(String strWebUrl, String strListName, String strFolder, Boolean fFetchSecurity, String strToken, Boolean fSecurityOnly, UInt32& lItems, sListItemWithBlob[]& vIDs, String& strNewToken) 
+ 
+This error is after
+w3wp.exe (0x3004) 0x1920 SharePoint Foundation General 8nca Verbose Application error when access /_vti_bin/sitedata.asmx, Error=Request timed out.
+w3wp.exe (0x3004) 0x1920 SharePoint Foundation Monitoring nass Verbose ____Execution Time=137798.035015623 
+This has a large execution time value 2+ min
+   
+Cause 
+Request timeout 
+ 
+ 
+Resolution 
+Edited the web.config of the web application http://<siteurl>/
+ 
+Added
+<location path="_vti_bin/sitedata.asmx">
+    <system.web>
+      <httpRuntime executionTimeout="3600" />
+    </system.web>
+</location>
+Content Processing
+- The content processing component processes crawled items and sends these items to the index component. The content processing component performs operations such as document parsing and property mapping. It also performs linguistics processing such as language detection and entity extraction. The component transforms crawled items into artifacts that are included in the search index. The content processing component also writes information about links and URLs to the link database.
+· Plan content processing
+	The crawler crawls content repositories specified by content sources and then feeds the contents and metadata of crawled items to the content processing component. The content processing component reads and parses the crawled properties and then reports the properties to the Search Administration database.
+	You can map crawled properties to managed properties and configure property settings by editing the search schema. The content processing component reads the search schema and uses it to carry out the mapping. Only managed properties are included in the search index. Managed properties can be used to create refiners.
+· Include or exclude file types
+	Content from any file type can be included in the search index. In order for content to be indexed, it must first be crawled by a crawl component and then parsed by a content processing component. A crawl component can crawl a file only if the file extension is included in the list of file name extensions on the Manage File Types page. A content processing component can parse the contents of a crawled file only under the following conditions:
+	The content processing component has a format handler that can parse the file format.
+	The content processing component is enabled to parse files that have the file format and file name extension.
+	If the content processing component is unable to parse a file, the search index will only include file properties, such as the file name.
+	By default, SharePoint 2013 satisfies these requirements for many types of files and it can crawl and parse these file types without your having to install additional format handlers.
+	You can extend the initial collection of file formats that SharePoint 2013 can parse by adding third-party filter-based format handlers, known as iFilters. A third party iFilter can override a built-in format handler.
+	 
+- Flow chart of content processing:
+
+- Scenario:
+
+
+Failing to parse PDF documents
+ 
+Symptom 
+On 2013 farm, when you search for the keyword "IIENAB" on the out of the box search center page where you're won’t  getting search results. This keyword is present on many of the PDF files where they are under 25 MB in size. We found that the PDF files which are having this keyword was not crawled successfully and got below error.
+Error: 
+http://contoso.com/Shared Documents/IIE.pdfUse SHIFT+ENTER to open the menu (new window). Open Menu 
+Processing this item failed because of a timeout when parsing its contents. (Error parsing document 'http://contoso.com/Shared Documents/IIE.pdf'. The parsing operation timed out.; ; SearchID = 806499B4-A10E-4FB0-9048-4E5D6E1AA4A7 )
+Cause 
+Doc parser issue
+ 
+Resolution 
+Captured ULS logs while crawling the PDF files.
+ 
+ULS Logs
+ 
+01/04/2017 13:38:56.73        NodeRunnerContent1-f0fbddf4-163 (0x203C)        0x19CC        Search        Document Parsing        ai3lc        High        Session: Parsing operation timed out. Format handler will be aborted. Encoding: System.Text.SBCSCodePageEncoding, FormatId: pdf, DocId: http://contoso.com/Shared Documents/IIE.pdf, InputSize (bytes): 25818743. Session=a5405443-fe82-457d-87fa-9a9041d08358.        838d961c-5cb2-42ba-93de-71c5502a7be5
+ 
+01/04/2017 13:38:56.73        NodeRunnerContent1-f0fbddf4-163 (0x203C)        0x19CC        Search        Common Processing        ai9of        Medium        [Microsoft.CrawlerFlow-069b6fe9-30a7-4ade-974d-7822eaaed139] Microsoft.Ceres.Evaluation.Engine.ErrorHandling.HandleExceptionHelper : Evaluation failure detected:    Operator          : DocParser    Operator type     : DocumentParser    Error id          : 304004    Correlation id    : 838d961c-5cb2-42ba-93de-71c5502a7be5    Partition id      : 0c37852b-34d0-418e-91c6-2ac25af4be5b    Message           : Error parsing document 'http://contoso.com/Shared Documents/IIE.pdf'. The parsing operation timed out.    49691C90-7E17-101A-A91C-08002B2ECDA9:#9: http://contoso.com/Shared Documents/IIE.pdf    id                : ssic://27921  System.TimeoutException: The parsing operation timed out.    
+ 
+Supported articles:
+https://www.microsoft.com/en-us/download/details.aspx?id=51378 
+ 
+The action plan:
+--------------------
+You can increase some timeout settings in the registry on the crawling servers. You can see more info here: https://support.microsoft.com/en-us/kb/3114817#bookmark-reg 
+You will have to add these registry settings on both Crawl & content processing component servers if you’re having these components on multiple servers.  
+Increase MaxDownloadsize to 250 MB using following PS commands and ran crawl.
+$searchapp = Get-SPEnterpriseSearchServiceApplication 
+$searchapp.SetProperty(“MaxDownloadSize”,250) 
+$searchapp.Update()
+On Crawl & Content processing component servers, take registry backup of the folder "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office Server\15.0\Search\ and create a sub key called "DocParser and add below 32bit DWORD keys as below.
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office Server\15.0\Search\DocParser\ParsingTimeout
+Decimal Value: 12000000
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office Server\15.0\Search\DocParser\MaxSandboxRequestWaitTime
+Decimal Value: 12000000
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office Server\15.0\Search\DocParser\MaxSandboxMemory
+Decimal Value: 2048
+Restart Hostcontroller service & Search15 service from services.msc and run the crawl.
+ 
+ 
+Indexing
+- The search index is a set of files that are stored in separate folders on a server. The Content Processing Component processes items provisioned by the Crawl Components, maps crawled properties to managed properties, and formats these as artifacts that can be stored on the search index. The indexes can include:
+	· Full-text indexes.
+	· Indexes of the managed properties (marked as retrievable or queryable).
+	· An index for attribute vectors
+	· Numeric indexes.
+Because the Search Index can be a very large file, you can divide it into index partitions to improve performance and management. An index partition is a logical portion of the entire search index. The index comprises the Index Component, index partitions, and index replicas, which are described as follows:
+	· Index Component. This is used both in the content ingestion process and in the content querying process. For the former, the Indexing Component receives items from the Content Processing Component and writes them to the index file. For the latter, it receives queries from the Query Processing Component and returns the result sets that are applicable to the query. The Indexing Component is also responsible for much of the index content management. For example, it will physically reorder index content if changes to the index architecture are triggered by the Search Administration Component.
+	· Index Partition. This is a logical portion of the entire search index; the index is the aggregated result of all of the index partitions.
+	· Index Replica. This is a physical copy of an index partition. Replicas can be either a Primary Replica or a Secondary Replica. The Primary Replica is contacted by the Content Processing Component to write new items to an Index Partition. Secondary Replicas are read-only copies of the same data, which are used to provision results. You can scale you search index in two ways:
+	· You can add Index partitions to manage increasing search content volume. For example, in a farm with three index partitions, each index partition contains one-third of the entire search index.
+	· You can add Index replicas in an index partitions to manage high query loads or to provide increased fault tolerance. Each index partition has one or more index replicas. For example, in a farm with one index partition that contains three index replicas, each index replica serves one-third of the total queries.
+	 
+- Scenario:
+Crawling completes but fails to index items.
+Symptoms 
+The crawling of contents is suddenly stopping with the below message in the CrawlLog 
+ 
+The item could not be indexed successfully because the item failed in the indexing subsystem. ( The item could not be indexed successfully because the item failed in the indexing subsystem.; Caught exception when preparing generation GID[3]: (IndexComponent1-c23a8f9f-d002-4bc3-b35b-613d5e36c894-SP207913e3a292.I.0.0: Fatal: Writing 4 bytes to '&$C:\Program Files\Microsoft Office Servers\15.0\Data\Office Server\Applications\Search\Nodes\46D6D5\IndexComponent1\storage\data\SP207913e3a292.2.I.0.0\ms\%default\part.00000003\merged.mfs|numeric\managedproperty1/intocc.bidx' failed. ); Aborting insert of item in Link )
+ 
+OR 
+ 
+The item could not be indexed successfully because the item failed in the indexing subsystem. ( The item could not be indexed successfully because the item failed in the indexing subsystem.; Failed to recover content group; Aborting insert of item in Link Database because it was not inserted to the Search Index.; ; SearchID = xxxxxxx )
+ERROR : fsplugin: IndexComponent1-9a2627b7-44b0-439f-b374-e17d54716d6d-SPc6c89daf4bed.I.0.0 (8480): std::exception of type class fast::ex::io_exception caught while preparing partition updates: Failed to open '&$F:\SearchIndex\SPc6c89daf4bed.2.I.0.0\ms\%default\part.00000530\merged.mfs|\mars_id.map' for write!
+ 
+Cause
+The Search Indexing engine is reaching the default limits of opened files mainly due to the Search Schema size (number of Managed Properties).
+   
+ 
+ 
+Resolution 
+ 
+Important these steps should only be completed by a Support Escalation Engineer or Escalation Engineer. 
+ 
+The following actions would mitigate the Search indexing engine problem for SharePoint Server 2013 and previous versions, ONLY.
+ 
+ On each of the Search Index components servers:
+ 
+1. Add the below 2 registries on all Index Components servers
+ 
+reg add "HKLM\SOFTWARE\Microsoft\Office Server\15.0\Search\FSPlugin" /f /v mfs_max_open_files /t REG_DWORD /d 51200
+reg add "HKLM\SOFTWARE\Microsoft\Office Server\15.0\Search\FSPlugin" /f /v mfs_max_num_pages /t REG_DWORD /d 53248
+ 
+2. Restart the corresponding Host Controller service.
+ 
