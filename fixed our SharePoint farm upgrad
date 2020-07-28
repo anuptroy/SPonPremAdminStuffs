@@ -1,0 +1,23 @@
+
+
+How I fixed our SharePoint farm upgrade woes (Note: run all PowerShell (PS) commands in an elevated PowerShell window – *need 2 pre-opened windows*)
+ 
+· Turn off all the following services (you can do this in your first PowerShell window)
+	net stop SPTraceV4; net stop SPWriterV4; net stop SPAdminV4; net stop SPTimerV4; net stop w3svc
+ 
+· Manually stop both search services (in the services GUI on the SP server) – Note: SP 2010 only has 1 Search Service.
+ 
+· Run the following command in your second PowerShell window
+	stsadm -o setproperty -pn command-line-upgrade-running -pv No
+ 
+· Flush the Config Cache follow this blog post
+ 
+· Run the following PowerShell in your second PowerShell window
+	PSConfig.exe -cmd upgrade -inplace b2b -wait -force
+ 
+· As soon as it reaches step #3 in the upgrade process, in the first elevated PS window, run the following PS
+net start SPTraceV4; net start SPWriterV4; net start SPAdminV4; net start SPTimerV4; net start w3svc
+ 
+· Quickly manually start the two search services (in the Services GUI on the SP Server)
+	 
+· The upgrade process should complete successfully after this
