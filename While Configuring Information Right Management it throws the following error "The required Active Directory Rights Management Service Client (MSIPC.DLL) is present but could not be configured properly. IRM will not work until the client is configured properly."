@@ -1,0 +1,42 @@
+Perform the basic TS steps
+1. Log on to ADRMS server as an Administrator.
+2. Click Start, and then click Computer.
+3. Navigate to C:\Inetpub\wwwroot\_wmcs\Certification.
+4. Right-click ServerCertification.asmx, click Properties, and then click the Security tab.
+5. Click Advanced, click Edit, select the Include inheritable permissions from this object's parent check box, and then click OK two times.
+6. Click Edit, and then click Add.
+7. Click Object Types, select the Computers check box, and then click OK.
+8. Type YourSharePointServerName, and then click OK. (note: If your SharePoint service/application pool is a domain account you can, and should give it rights here as well. If you have multiple application pools, you might need to add them if they require RMS support)
+9. Click OK to close the ServerCertification.asmx Properties sheet.
+By default the Read & execute and the Read permissions are configured for the SharePoint server computer account object and all other accounts inherited from the parent folder. (make sure to set Allow Inheritable Permissions on ServerCertification.asmx).
+It's good practice to specifically give the SharePoint Application Pool accounts these rights as well.
+10. Click Start, and then click Command Prompt.
+11. Type iisreset, and then press ENTER.
+12. Navigate back to SharePoint Server > Security > Information Policy > Configure Information Rights Management > 
+13. Use the default RMS server specified in Active Directory > Still getting same error" "The required Active Directory Rights Management Service Client (MSIPC.DLL) is present but could not be configured properly. IRM will not work until the client is configured properly."
+14. After performing all the steps ask cs need some time to research 
+15. Shift was over by the time
+16. Inform cs will connect back to him tomorrow 
+
+
+
+Resolution Summary:
+· Host file entry was missing for RMS URL
+· Add a host file entry on DNS 
+· On respected zone as " rms.Cloudstrats.com " with IP address i.e. 192.168..1.135  of machine where RMS was configured
+· After making host file entry we check the following command on SharePoint server
+· Get-SPIRMSettings
+	Output:
+	IRMEnabled                                                       : True
+	UseActiveDirectoryDiscovery                     : True
+	CertificateServerUrl                                        :
+	SubscriptionScopeSettingsEnabled          : False
+	ServiceAuthenticationCertificateName :
+	UseOauth                                                           : False
+	 
+· Now values for IRMEnabled & UseActiveDirectoryDiscovery = True
+· Navigate SharePoint Server > Security > Information Policy > Configure Information Rights Management >Use the default RMS server specified in Active Directory > 
+· Now you were able to use RMS without any error
+· Issue resolved 
+
+
