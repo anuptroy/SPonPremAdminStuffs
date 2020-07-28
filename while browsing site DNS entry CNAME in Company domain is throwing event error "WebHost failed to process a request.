@@ -1,0 +1,22 @@
+RESOLUTION:
+
+- Follow below steps to narrow down the issue with customer's external redirection:
+
+Create host files mentioned below by replacing the IP with actual SP server:
+
+Ex. 10.0.0.1 https://test.westeurope.cloudapp.net
+Ex. 10.0.0.1 https://test.company.com
+
+
+Set AAM as below:
+
+Internet: https://test.company.com
+Internal URL: https://test.westeurope.cloudapp.net
+
+Zone        Internal                                                         Public
+Internet   https://test.company.com                    https://test.company.com
+Internet    https://test.westeurope.cloudapp.net   https://test.company.com
+
+
+Ping: https://test.company.com - 10.0.0.1
+ping: https://test.westeurope.cloudapp.net - 10.0.0.1
