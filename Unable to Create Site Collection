@@ -1,0 +1,36 @@
+SOL:
++For Central Admin App Pool > Process Model > Shutdown Time Limit value was 90sec by default
++we change it from 90sec to 300sec
++after this we refresh Central Admin Site
++Then we proceed with creation of New Web App
++it took some time after which web app got created with new site collection successfully without any error
+
+Explam=antin
+
+· It takes times to create new wb application
+· While creating web application through UI it throws error " This page cant be displayed"
+· Check IIS for the specific created site > explore and check all the necessary folders were created
+· Then we tried to created We application via PowerShell command :
+· New-SPWebApplication -Name "Contoso Internet Site" -Port 80 -HostHeader sharepoint.contoso.com -URL "https://www.contoso.com" -ApplicationPool "ContosoAppPool" -ApplicationPoolAccount (Get-SPManagedAccount "DOMAIN\jdoe")
+· Via PowerShell command web got created successfully
+· Then ask cs to create web app again with UI
+· It still throws same error
+· Done some research 
+· By that time ask cs to delete all web applications which were created
+· Then we perform the following action: 
+· For Central Admin App Pool > Process Model > Shutdown Time Limit value was 90 sec by default.
+	 
+· We change it from 90 sec to 300 sec.
+ 
+· Perform IISRESET
+ 
+· After this we refresh Central Admin Site.
+ 
+· Then we proceed with creation of New Web App, It took some time after which web app got created with new site collection successfully without any error.
+ 
+· Made a host file entry for the specific web application which was created. 
+ 
+· While browsing site it was asking for credentials multiple times, then we ran the following command.
+	New-ItemProperty HKLM:\System\CurrentControlSet\Control\Lsa -Name "DisableLoopbackCheck" -value "1" -PropertyType dword 
+ 
+Then we were able to browse URL successfully
