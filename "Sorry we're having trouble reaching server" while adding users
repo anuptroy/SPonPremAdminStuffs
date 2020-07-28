@@ -1,0 +1,9 @@
+# we ran the following command to check 
+# $w = get-spwebapplication https://www.majesconet.com
+# $w.peoplepickersettings
+# The we found that user have migrated website multiple times 
+# Then we decided to flush peoplepicker config with the following command
+# stsadm -o setproperty -url https://www.majesconet.com -pn peoplepicker-searchadforests -pv “”
+# After successfully flushing we perform IISRESET
+# ask cs to browse site and try to add users
+# now cs was able to add users
