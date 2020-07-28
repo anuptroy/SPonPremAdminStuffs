@@ -1,0 +1,5 @@
+$service = Get-SPServiceInstance | Where-Object {$_.TypeName -eq “Secure Store Service”}
+$service.Provision()
+IISRESET
+
+https://www.sharepointsky.com/cannot-complete-this-action-as-the-secure-store-shared-service-is-not-responding-please-contact-your-administrator-in-sharepoint-2016/
