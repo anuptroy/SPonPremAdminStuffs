@@ -1,0 +1,248 @@
+Troubleshooting Logs
+****************************
+- Contacted customer and initiated the LMI after disclaimer
+
+- While accessing the URL http://sharepoint:8001/sites/survey/, we got HTTP 500 Error
+
+- Took the backup of the web.config file and made the changes : Callstack= false to Callstack = true and CustomErrors = On to CustomErrors = Off
+
+- Now did an IISRESET and tried accessing the Site to get the below mentioned Error :
+
+Server Error in '/' Application.
+--------------------------------------------------------------------------------
+No connection could be made because the target machine actively refused it 127.0.0.1:32843 
+Description: An unhandled exception occurred during the execution of the current web request. Please review the stack trace for more information about the error and where it originated in the code. 
+
+Exception Details: System.Net.Sockets.SocketException: No connection could be made because the target machine actively refused it 127.0.0.1:32843
+
+Source Error: 
+
+An unhandled exception was generated during the execution of the current web request. Information regarding the origin and location of the exception can be identified using the exception stack trace below.  
+
+Stack Trace: 
+
+[SocketException (0x274d): No connection could be made because the target machine actively refused it 127.0.0.1:32843]
+   System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress) +255
+   System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception) +633
+
+[WebException: Unable to connect to the remote server]
+   System.Net.HttpWebRequest.GetRequestStream(TransportContext& context) +700
+   System.Net.HttpWebRequest.GetRequestStream() +21
+   System.ServiceModel.Channels.WebRequestHttpOutput.GetOutputStream() +133
+
+[EndpointNotFoundException: There was no endpoint listening at http://localhost:32843/SecurityTokenServiceApplication/securitytoken.svc that could accept the message. This is often caused by an incorrect address or SOAP action. See InnerException, if present, for more details.]
+   System.Runtime.Remoting.Proxies.RealProxy.HandleReturnMessage(IMessage reqMsg, IMessage retMsg) +14350190
+   System.Runtime.Remoting.Proxies.RealProxy.PrivateInvoke(MessageData& msgData, Int32 type) +388
+   Microsoft.IdentityModel.Protocols.WSTrust.IWSTrustContract.Issue(Message message) +0
+   Microsoft.IdentityModel.Protocols.WSTrust.WSTrustChannel.Issue(RequestSecurityToken rst, RequestSecurityTokenResponse& rstr) +67
+   Microsoft.IdentityModel.Protocols.WSTrust.WSTrustChannel.Issue(RequestSecurityToken rst) +33
+   Microsoft.SharePoint.SPSecurityContext.SecurityTokenForContext(Uri context, Boolean bearerToken, SecurityToken onBehalfOf, SecurityToken actAs, SecurityToken delegateTo, SPRequestSecurityTokenProperties properties) +1408
+   Microsoft.SharePoint.SPSecurityContext.SecurityTokenForLegacyLoginContext(Uri context) +68
+   Microsoft.SharePoint.IdentityModel.SPWindowsClaimsAuthenticationHttpModule.GetSecurityTokenForCurrentWindowsIdentity(HttpContext context) +23
+   Microsoft.SharePoint.IdentityModel.SPWindowsClaimsAuthenticationHttpModule.PerformClaimsAuthenticationForUser(HttpContext context, SPFederationAuthenticationModule fam, SessionAuthenticationModule sam, WindowsIdentity windowsIdentity, SessionSecurityToken sessionSecurityToken, Boolean writeCookie) +285
+   Microsoft.SharePoint.IdentityModel.SPWindowsClaimsAuthenticationHttpModule.AuthenticateRequest(Object sender, EventArgs e) +827
+   System.Web.SyncEventExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute() +215
+   System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously) +98
+--------------------------------------------------------------------------------
+Version Information: Microsoft .NET Framework Version:4.0.30319; ASP.NET Version:4.6.1055.0 
+
+- Found the below traces in the Event Viewer simultaneously :
+
+Log Name:      Application
+Source:        Microsoft-SharePoint Products-SharePoint Foundation
+Date:          2/13/2018 10:55:07 AM
+Event ID:      8306
+Task Category: Claims Authentication
+Level:         Error
+Keywords:      
+User:          RICOAUTO\sharepoint
+Computer:      sharepoint.ricoauto.com
+Description:
+An exception occurred when trying to issue security token: There was no endpoint listening at http://localhost:32843/SecurityTokenServiceApplication/securitytoken.svc/actas that could accept the message. This is often caused by an incorrect address or SOAP action. See InnerException, if present, for more details..
+Event Xml:
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-SharePoint Products-SharePoint Foundation" Guid="{6FB7E0CD-52E7-47DD-997A-241563931FC2}" />
+    <EventID>8306</EventID>
+    <Version>16</Version>
+    <Level>2</Level>
+    <Task>47</Task>
+    <Opcode>0</Opcode>
+    <Keywords>0x2000000000000000</Keywords>
+    <TimeCreated SystemTime="2018-02-13T05:25:07.484480300Z" />
+    <EventRecordID>13983</EventRecordID>
+    <Correlation ActivityID="{C6FC499E-4FC8-409B-E3E5-7974EB3BFB23}" />
+    <Execution ProcessID="136" ThreadID="3576" />
+    <Channel>Application</Channel>
+    <Computer>sharepoint.ricoauto.com</Computer>
+    <Security UserID="S-1-5-21-2046818915-1977683828-3621779058-12641" />
+  </System>
+  <EventData>
+    <Data Name="string0">There was no endpoint listening at http://localhost:32843/SecurityTokenServiceApplication/securitytoken.svc/actas that could accept the message. This is often caused by an incorrect address or SOAP action. See InnerException, if present, for more details.</Data>
+  </EventData>
+</Event>
+
+
+
+
+Log Name:      System
+Source:        Service Control Manager
+Date:          2/13/2018 10:47:56 AM
+Event ID:      7000
+Task Category: None
+Level:         Error
+Keywords:      Classic
+User:          N/A
+Computer:      sharepoint.ricoauto.com
+Description:
+The SharePoint Timer Service service failed to start due to the following error: 
+The service did not start due to a logon failure.
+Event Xml:
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Service Control Manager" Guid="{555908d1-a6d7-4695-8e1e-26931d2012f4}" EventSourceName="Service Control Manager" />
+    <EventID Qualifiers="49152">7000</EventID>
+    <Version>0</Version>
+    <Level>2</Level>
+    <Task>0</Task>
+    <Opcode>0</Opcode>
+    <Keywords>0x8080000000000000</Keywords>
+    <TimeCreated SystemTime="2018-02-13T05:17:56.072203600Z" />
+    <EventRecordID>14560</EventRecordID>
+    <Correlation />
+    <Execution ProcessID="500" ThreadID="2084" />
+    <Channel>System</Channel>
+    <Computer>sharepoint.ricoauto.com</Computer>
+    <Security />
+  </System>
+  <EventData>
+    <Data Name="param1">SharePoint Timer Service</Data>
+    <Data Name="param2">%%1069</Data>
+    <Binary>53005000540069006D0065007200560034000000</Binary>
+  </EventData>
+</Event>
+
+
+Log Name:      System
+Source:        Service Control Manager
+Date:          2/13/2018 10:47:56 AM
+Event ID:      7031
+Task Category: None
+Level:         Error
+Keywords:      Classic
+User:          N/A
+Computer:      sharepoint.ricoauto.com
+Description:
+The SharePoint Timer Service service terminated unexpectedly.  It has done this 1127 time(s).  The following corrective action will be taken in 30000 milliseconds: Restart the service.
+Event Xml:
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Service Control Manager" Guid="{555908d1-a6d7-4695-8e1e-26931d2012f4}" EventSourceName="Service Control Manager" />
+    <EventID Qualifiers="49152">7031</EventID>
+    <Version>0</Version>
+    <Level>2</Level>
+    <Task>0</Task>
+    <Opcode>0</Opcode>
+    <Keywords>0x8080000000000000</Keywords>
+    <TimeCreated SystemTime="2018-02-13T05:17:56.072203600Z" />
+    <EventRecordID>14559</EventRecordID>
+    <Correlation />
+    <Execution ProcessID="500" ThreadID="2084" />
+    <Channel>System</Channel>
+    <Computer>sharepoint.ricoauto.com</Computer>
+    <Security />
+  </System>
+  <EventData>
+    <Data Name="param1">SharePoint Timer Service</Data>
+    <Data Name="param2">1127</Data>
+    <Data Name="param3">30000</Data>
+    <Data Name="param4">1</Data>
+    <Data Name="param5">Restart the service</Data>
+    <Binary>53005000540069006D0065007200560034000000</Binary>
+  </EventData>
+</Event>
+
+- Asked customer whether he had changed the credentials for Farm account and he said yes but they did not update it in SharePoint
+
+- Hence ran the PowerShell command : PS C:\> stsadm -o updatefarmcredentials -userlogin "RICOAUTO\sharepoint" -password "admin2010*"
+
+Operation completed successfully.
+
+- Still we were getting the same Error while accessing the main site
+
+- Confirmed with the customer that they had taken the snapshots of the SQL and SharePoint server and ran a repair which completed successfully
+
+- Basis the main error, found case in VKB :  https://vkbexternal.partners.extranet.microsoft.com/VKBWebService/ViewContent.aspx?scid=MSS;EN-US;117081616195962
+
+- SharePoint Web Services was not present in the IIS manager
+
+- Hence created the same using the below script :
+
+$Type = [System.Type]::GetType("Microsoft.SharePoint.Administration.SPIisWebServiceSettings, Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c")
+$Instance = $Type::Default
+$Method = $Type.GetMethod("ProvisionLocal", "Instance, NonPublic", $null, @(), $null)
+$Method.Invoke($Instance, $null)
+$Method = $Type.GetMethod("Provision", "Instance, Public", $null, @(), $null)
+$Method.Invoke($Instance, $null) 
+
+- Subsequently, provisioned the STS :
+
+$services = Get-SPServiceApplication
+foreach($service in $services) {$service.provision(); write-host $service.name} 
+
+- Below was the output :
+
+Secure Store Service
+State Service
+Workflow Service Application
+Managed Metadata Service
+App Management Service
+SecurityTokenServiceApplication
+Machine Translation Service
+Topology
+Usage and Health data collection
+77b8ffad-f113-4ecb-b888-d84e6ee01006
+User Profile Service Application
+Business Data Connectivity Service
+Search Service Application
+
+- Also confirmed if STS is generating tokens using the below script :
+
+$farm = [Microsoft.SharePoint.Administration.SPFarm]::Local 
+$webServiceCollection = new-object Microsoft.SharePoint.Administration.SPWebServiceCollection($farm) 
+foreach ($service in $webServiceCollection) 
+{ 
+    foreach ($webApp in $service.WebApplications) 
+        { 
+            $firstWebApp = $webApp 
+            #Get the context 
+            $context = $firstWebApp.GetResponseUri([Microsoft.SharePoint.Administration.SPUrlZone]::Default) 
+            Write-Host "Web Application Context:" $context.AbsoluteUri 
+            #Call the token genereregexator function 
+            $token = [Microsoft.SharePoint.SPSecurityContext]::SecurityTokenForContext($context) 
+            Write-Host "Token:" $token.InternalTokenReference 
+            Write-Host "Security token service is working." 
+        } 
+} 
+
+- We got the below output :  
+
+PS C:\> .\STS.ps1
+Web Application Context: http://sharepoint:8001/
+Token: SamlAssertionKeyIdentifierClause(AssertionId = '_e98ec771-0d98-455e-8e84-
+120ce68997bb')
+Security token service is working.
+Web Application Context: http://sharepoint:31746/
+Token: SamlAssertionKeyIdentifierClause(AssertionId = '_23c7df03-b11e-400c-8dd3-
+19d2df858263')
+Security token service is working.
+Web Application Context: http://sharepoint:44317/
+Token: SamlAssertionKeyIdentifierClause(AssertionId = '_8dad53c3-c91a-475a-9cdc-
+380d5c831988')
+Security token service is working.
+
+- Tried to access the main site http://sharepoint:8001/sites/survey/ and it was accessible without getting any Error
+
+- Customer asked to call after 40-45 minutes since he was in the middle of some another task
+
+- Acknowledged the same and call dropped with customer's permissions
