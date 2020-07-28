@@ -1,0 +1,32 @@
+ we ran the following command
+
++we ran upgrade-spcontentdatabase "Data Base name" command via PowerShell
+
++after running this command successfully now database upgrade status shows ' no action required" 
++then we stop admin and timer services via following command
+
+ net stop SPAdminV4; 
+ 
+net stop SPTimerV4
+
++after successfully stopping admin and timer service 
+
++we clear config cache
+
++then we ran the following command
+
+STSADM -o execadmsvcjobs
+
++after this command we ran ps config command
+
+PSConfig.exe -cmd upgrade -inplace b2b -wait -cmd applicationcontent -install -cmd installfeatures -cmd secureresources -force
+
++it ran ps config successfully
+
++once it is finished then we started the following admin and timer services with the following commands
+
+net start SPAdminV4;
+net start SPTimerV4
+
++now since we ran the following all the commands successfully 
++now we can see the server status to no action required
