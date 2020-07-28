@@ -1,0 +1,11 @@
+#Taking Remote powershell from one sharepoint machine to anther machine
+
+$creds = (get-credential exciscom\SpFarmAcc)
+
+Enter-PSSession <SERVER NAME> -Authentication CrdeSSP -Credential $creds
+
+asnp *sh*
+
+PSConfig commadn
+
+Exit-PSSession
