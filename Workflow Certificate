@@ -1,0 +1,15 @@
+Kindly find the below steps to change the workflow manager certificate If Expired Trouble shooter.
+ 
+custom certificate
+ 
+· You have a custom certificate (not auto-generated) that expired yesterday on your single-server WFM and Service Bus Farm. 
+· Thumbprint:  DABDF0481EA1F71B06CF03B5061249D4670C03DE - is the expired certificate 
+· This needs to be changed using these instructions : https://blogs.msdn.microsoft.com/whereismysolution/2017/02/08/changing-my-workflow-manager-farm-certificates/  
+· You will need a new certificate that is identical to the first in order to do this, that starts at an earlier time than expiration.  
+· We can make a temporary certificate using PowerShell to do this (while the time is put back on the server):  
+· New-SelfSignedCertificate -DnsName "wfmserver.fred.com", "*.fred.com" -CertStoreLocation "cert:\LocalMachine\My"  
+· You will need to update it with your DNS name ie. *.nwc.com.sa 
+· You have WFM 1.0 CU3 installed, but possibly only Service Bus 1.0 and not service Bus CU1 
+· Please check what patched have been applied to your farm using “installed updates” in programs and features” 
+· I recommend that you apply Service Bus CU1: https://www.microsoft.com/en-us/download/details.aspx?id=36794  if you do not have it already 
+· Back up your databases before making the CU and certificate changes. 
