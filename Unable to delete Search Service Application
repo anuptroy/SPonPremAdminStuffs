@@ -1,0 +1,284 @@
+While check my Search Service Application I got below prompt:
+Search Service Application: Search Administration
+
+System Status
+Administrative status  	The remote server returned an error: (503) Server Unavailable.
+
+Initially for my Old Search Service Application while clicking on Content Sources I was getting below Error 
+While accessing Content Sources:
+Sorry, something went wrong 
+System.Net.WebException: The remote server returned an error: (503) Server Unavailable. 
+   at Microsoft.Office.Server.Search.Administration.SearchApi.RunOnServer[T](CodeToRun`1 remoteCode, CodeToRun`1 localCode, Boolean useCurrentSecurityContext, Int32 versionIn) 
+   at Microsoft.Office.Server.Search.Administration.SearchApi.GetVersion() 
+   at Microsoft.Office.Server.Search.Administration.SearchApi..ctor(SearchServiceApplication application) 
+   at Microsoft.Office.Server.Search.Administration.SearchApiFactory.CreateSearchApi(SearchServiceApplication application) 
+   at Microsoft.Office.Server.Search.Administration.SearchServiceApplication.get_SearchApi() 
+   at Microsoft.Office.Server.Search.Administration.ContentSourceCollection..ctor(Content parent) 
+   at Microsoft.Office.Server.Search.Administration.Content.get_ContentSources() 
+   at Microsoft.Office.Server.Search.Internal.UI.WebControls.ListContentSourcesControl.OnLoad(EventArgs e) 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Control.LoadRecursive() 
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint) 
+
+During this point of time I had only one Search Service Application:
+Thus I decided to delete and recreate it.
+I tried to perform delete with GUI but it didn’t deleted completely, 
+Always one time timer job was responsible to get this operation in stuck state.
+
+Thus in order to delete it successfully, I performed the below PowerShell.
+
+$SSA = Get-SPEnterpriseSearchServiceApplication
+$SSA.Delete()
+
+From <https://abdulazizfarooqi.wordpress.com/2016/05/21/sharepoint-2013-search-administration-web-service-application-was-stooped/> 
+
+After performing above command
+Observed : it was stuck at one process
+Came to Tine jobs
+Saw one of one time timer job
+Deleted that one time timer job and above command executed successfully
+
+Now I can see that my Search service application was deleted successfully
+__________________________________________________________________
+
+With GUI I tried to create it but it seems failed after sometime.
+Below Error was generated while creation of SSA with GUI
+
+Errors were encountered during the configuration of the Search Service Application. 
+System.TimeoutException: Timeout expired. Jobs with ID: c51d05c6-4989-437f-90aa-54f8a2d591ca; were not finished for Application bdbadb1e-334c-440c-88e2-55d8db1cdef5 at SharepointJobUtilities.WaitForAllSharepointJobs(IEnumerable`1 jobs, String applicationName, TimeSpan timeout) at Microsoft.Office.Server.Search.Administration.SearchAdminWebServiceApplication.ProvisionInstances() at Microsoft.SharePoint.Administration.SPIisWebServiceApplication.Update() at Microsoft.Office.Server.Search.Administration.SearchConfigWizard.<>c__DisplayClass13.b__a() at Microsoft.Office.Server.Search.Administration.SearchAdminUtils.UpdateIgnoreSPUpdatedConcurrencyException(String description, SearchAdminUtilsUpdateDelegate updateDelegate, SearchAdminUtilsRefreshObjectDelegate refreshObjectDelegate) at Microsoft.Office.Server.Search.Administration.SearchConfigWizard.UpdateProperties() at Microsoft.Office.Server.Search.Administration.SearchConfigurationJobDefinition.ExecuteTimerJob()
+
+
+Search Service Application was got created with error and while performing delete operation Search Service Application proxy got deleted successfully, but not the SSA.
+I tried above PowerShell Commands to delete it but this time it was not successful, then I thought to leave as it is and proceed to create new Search with PowerShell. 
+
+Thus I thought to go ahead and create a new Search Service Application with PowerShell
+Even while Creating Search Service application I was encountered with errors and how I manage to make the below command successful, I will let you know in that step.
+
+
+Steps Performed in order to create new Search Service Application via PowerShell:
+
+
+# New-SPEnterpriseSearchServiceApplication  
+
+#Gave New Search Service Application Name: Search New
+#Gave Search DB Name: SearchDBNew
+#Gave Existing Application pool as provided given below; 
+
+$sa = New-SPEnterpriseSearchServiceApplication -Name "Search New" -DatabaseName "SearchDBNew" -ApplicationPool "NewAppPoolSearchAdminWebSrv" -AdminApplicationPool "NewAppPoolSearchQuerySiteSettingsWebSrv"
+
+#New-SPEnterpriseSearchServiceApplicationProxy 
+#Created Search Service Application Proxy
+New-SPEnterpriseSearchServiceApplicationProxy -Name "Search Service Application Proxy 2" -SearchApplication $sa  
+
+$sa = Get-SPEnterpriseSearchServiceApplication 
+
+$si = Get-SPEnterpriseSearchServiceInstance | ?{$_.Server -match "SEARCHSERVERNAME"}
+$si = Get-SPEnterpriseSearchServiceInstance -local | ?{$_.Server -match "SEARCHSERVERNAME"}
+
+Start-SPEnterpriseSearchServiceInstance -Identity $si      
+
+Get-SPEnterpriseSearchServiceInstance | ?{$_.Server -match "SEARCHSERVERNAME"}
+Get-SPEnterpriseSearchServiceInstance -local | ?{$_.Server -match "SEARCHSERVERNAME"}
+
+$clone = $sa.ActiveTopology.Clone()
+
+
+PS C:\> Get-SPEnterpriseSearchServiceApplication -Identity fa080c41-657a-47af-b881-6329995e8fcc
+
+
+Name                  : Search New
+Id                    : fa080c41-657a-47af-b881-6329995e8fcc
+ServiceName           : SearchQueryAndSiteSettingsService
+CrawlTopologies       : 
+CrawlStores           : {SearchDBNew_CrawlStore}
+ActiveTopology        : TopologyId: 4c7072a6-f2c8-41cb-b71e-c41f5828aa4c, CreationDate: 18/02/2020 06:55:00, State: Active, Components: , 
+                        QueryGraph: False
+SearchAdminDatabase   : SearchAdminDatabase Name=SearchDBNew
+Status                : Online
+DefaultSearchProvider : SharepointSearch
+Properties            : {Microsoft.Office.Server.Utilities.SPPartitionOptions}
+
+
+PS C:\> $sa = Get-SPEnterpriseSearchServiceApplication -Identity fa080c41-657a-47af-b881-6329995e8fcc
+
+PS C:\> $clone = $sa.ActiveTopology.Clone()
+
+#PS C:\> New-SPEnterpriseSearchAdminComponent
+#cmdlet New-SPEnterpriseSearchAdminComponent at command pipeline position 1
+#Supply values for the following parameters:
+#SearchTopology: 
+
+#Now we will assign and perform the below with Identity 
+#(Reason: while taking variable $sa = get-SPEnterpriseSearchServiceApplication : it was trying to get all search service application including corrupted one.
+#Thus in order to the above command should not pick corrupt SSA ia have used ID for helathy SSA for further procedure or else it was throwing error.
+
+PS C:\> $sa = Get-SPEnterpriseSearchServiceApplication -Identity fa080c41-657a-47af-b881-6329995e8fcc
+
+PS C:\> $clone = $sa.ActiveTopology.Clone()
+
+PS C:\> $si = Get-SPEnterpriseSearchServiceInstance | ?{$_.Server -match "SEARCHSERVERNAME"}
+
+PS C:\> New-SPEnterpriseSearchAdminComponent -SearchTopology $clone -SearchServiceInstance $si
+ComponentId           : ea8c26b5-302a-4c68-85b0-b367a502a3b7
+TopologyId            : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId              : e2b522f7-56b1-4a16-ae30-c9aea2cc5a3f
+Name                  : AdminComponent1
+ServerName            : SEARCHSERVERNAME
+ExperimentalComponent : False
+
+PS C:\> New-SPEnterpriseSearchContentProcessingComponent -SearchTopology $clone -SearchServiceInstance $si
+ComponentId           : 4b72f34c-b65e-4bc9-afb1-a853ecd378c5
+TopologyId            : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId              : e2b522f7-56b1-4a16-ae30-c9aea2cc5a3f
+Name                  : ContentProcessingComponent1
+ServerName            : SEARCHSERVERNAME
+ExperimentalComponent : False
+
+PS C:\> New-SPEnterpriseSearchAnalyticsProcessingComponent -SearchTopology $clone -SearchServiceInstance $si 
+NumProcessingTasksInParallel : 4
+MaxSortMemoryInMB            : 400
+ComponentId                  : 78077733-1e21-41bd-a5c1-c22af89ab728
+TopologyId                   : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId                     : e2b522f7-56b1-4a16-ae30-c9aea2cc5a3f
+Name                         : AnalyticsProcessingComponent1
+ServerName                   : SEARCHSERVERNAME
+ExperimentalComponent        : False
+
+PS C:\> New-SPEnterpriseSearchCrawlComponent -SearchTopology $clone -SearchServiceInstance $si
+ComponentId           : 15319384-76c4-4975-b34b-2c91aa14273d
+TopologyId            : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId              : e2b522f7-56b1-4a16-ae30-c9aea2cc5a3f
+Name                  : CrawlComponent1
+ServerName            : SEARCHSERVERNAME
+ExperimentalComponent : False
+
+PS C:\> New-SPEnterpriseSearchIndexComponent -SearchTopology $clone -SearchServiceInstance $si -IndexPartition 0
+IndexPartitionOrdinal : 0
+RootDirectory         : 
+ComponentId           : a8628b47-f66d-4b5a-94bf-30e22fc1b115
+TopologyId            : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId              : e2b522f7-56b1-4a16-ae30-c9aea2cc5a3f
+Name                  : IndexComponent1
+ServerName            : SEARCHSERVERNAME
+ExperimentalComponent : False
+
+PS C:\> New-SPEnterpriseSearchQueryProcessingComponent -SearchTopology $clone -SearchServiceInstance $si
+ComponentId           : d093e47c-33c1-42e6-9c7c-e1432c91f729
+TopologyId            : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId              : e2b522f7-56b1-4a16-ae30-c9aea2cc5a3f
+Name                  : QueryProcessingComponent1
+ServerName            : SEARCHSERVERNAME
+ExperimentalComponent : False
+
+#Reason I was getting below Error because of the Path which was mentioned
+PS C:\> New-SPEnterpriseSearchIndexComponent -SearchTopology $clone -SearchServiceInstance $si -IndexPartition 0 -RootDirectory F:\SearchIndex\0
+New-SPEnterpriseSearchIndexComponent : Cannot bind parameter 'RootDirectory' to the target. Exception setting "RootDirectory": "Could not 
+find a part of the path 'F:\SearchIndex\0'."
+At line:1 char:121
++ ... ServiceInstance $si -IndexPartition 0 -RootDirectory F:\SearchIndex\0
++                                                          ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (:) [New-SPEnterpriseSearchIndexComponent], ParameterBindingException
+    + FullyQualifiedErrorId : ParameterBindingFailed,Microsoft.Office.Server.Search.Cmdlet.NewSearchIndexComponent
+ 
+PS C:\> New-SPEnterpriseSearchIndexComponent -SearchTopology $clone -SearchServiceInstance $si -IndexPartition 0 -RootDirectory F:\SearchIndex\
+New-SPEnterpriseSearchIndexComponent : Cannot bind parameter 'RootDirectory' to the target. Exception setting "RootDirectory": "Could not 
+find a part of the path 'F:\SearchIndex'."
+At line:1 char:121
++ ... hServiceInstance $si -IndexPartition 0 -RootDirectory F:\SearchIndex\
++                                                           ~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (:) [New-SPEnterpriseSearchIndexComponent], ParameterBindingException
+    + FullyQualifiedErrorId : ParameterBindingFailed,Microsoft.Office.Server.Search.Cmdlet.NewSearchIndexComponent
+ 
+
+PS C:\> New-SPEnterpriseSearchIndexComponent -SearchTopology $clone -SearchServiceInstance $si -IndexPartition 0 -RootDirectory C:\SearchIndex\0
+IndexPartitionOrdinal : 0
+RootDirectory         : C:\SearchIndex\0
+ComponentId           : 40b91ef2-fbda-4b5b-a3d5-1c7c81bb4c68
+TopologyId            : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId              : e2b522f7-56b1-4a16-ae30-c9aea2cc5a3f
+Name                  : IndexComponent2
+ServerName            : SEARCHSERVERNAME
+ExperimentalComponent : False
+
+#For One Server it was successful.
+
+#Now we will perform the steps for SEARCHSERVERNAME2 
+
+PS C:\> $si2 = Get-SPEnterpriseSearchServiceInstance | ?{$_.Server -match "SEARCHSERVERNAME2 "}
+
+PS C:\> New-SPEnterpriseSearchAdminComponent -SearchTopology $clone -SearchServiceInstance $si2
+ComponentId           : 46fb2036-c553-4387-8076-0a2ca55d483b
+TopologyId            : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId              : 2a784129-c39b-4ca6-bfef-86029a5c80d8
+Name                  : AdminComponent2
+ServerName            : SEARCHSERVERNAME2 
+ExperimentalComponent : False
+
+PS C:\> New-SPEnterpriseSearchAnalyticsProcessingComponent -SearchTopology $clone -SearchServiceInstance $si2
+NumProcessingTasksInParallel : 4
+MaxSortMemoryInMB            : 400
+ComponentId                  : e26ee332-2f57-407a-b42b-9e8a3f830b18
+TopologyId                   : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId                     : 2a784129-c39b-4ca6-bfef-86029a5c80d8
+Name                         : AnalyticsProcessingComponent2
+ServerName                   : SEARCHSERVERNAME2 
+ExperimentalComponent        : False
+
+PS C:\> New-SPEnterpriseSearchContentProcessingComponent -SearchTopology $clone -SearchServiceInstance $si2
+ComponentId           : e5c9cb5d-281c-4372-b79d-2e2097ed92e5
+TopologyId            : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId              : 2a784129-c39b-4ca6-bfef-86029a5c80d8
+Name                  : ContentProcessingComponent2
+ServerName            : SEARCHSERVERNAME2 
+ExperimentalComponent : False
+
+PS C:\> New-SPEnterpriseSearchCrawlComponent -SearchTopology $clone -SearchServiceInstance $si2
+ComponentId           : 971dca13-2293-4348-ab54-bea7c69b53be
+TopologyId            : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId              : 2a784129-c39b-4ca6-bfef-86029a5c80d8
+Name                  : CrawlComponent2
+ServerName            : SEARCHSERVERNAME2 
+ExperimentalComponent : False
+
+PS C:\> New-SPEnterpriseSearchIndexComponent -SearchTopology $clone -SearchServiceInstance $si2 -IndexPartition 0 -RootDirectory C:\SearchIndex\0
+IndexPartitionOrdinal : 0
+RootDirectory         : C:\SearchIndex\0
+ComponentId           : cc5015ff-f9c2-4b2a-b23a-314fecf92f42
+TopologyId            : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId              : 2a784129-c39b-4ca6-bfef-86029a5c80d8
+Name                  : IndexComponent3
+ServerName            : SEARCHSERVERNAME2 
+ExperimentalComponent : False
+
+PS C:\> New-SPEnterpriseSearchQueryProcessingComponent -SearchTopology $clone -SearchServiceInstance $si2
+ComponentId           : b3630c2b-6bdf-491a-88a3-40285d0e1b0c
+TopologyId            : ae7326e5-0d02-452d-addb-81f40c2e7e77
+ServerId              : 2a784129-c39b-4ca6-bfef-86029a5c80d8
+Name                  : QueryProcessingComponent2
+ServerName            : SEARCHSERVERNAME2 
+ExperimentalComponent : False
+
+PS C:\> $clone.Activate()      
+Exception calling "Activate" with "0" argument(s): "Topology activation job died prematurely."
+At line:1 char:1
++ $clone.Activate()
++ ~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [], MethodInvocationException
+    + FullyQualifiedErrorId : SearchTopologyActivationException
+ 
+PS C:\> $clone.Activate()      
+Exception calling "Activate" with "0" argument(s): "Cannot make changes to topology in : Activating state"
+At line:1 char:1
++ $clone.Activate()
++ ~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [], MethodInvocationException
+    + FullyQualifiedErrorId : InvalidTopologyException
+ 
+
+#After Getting the above prompt, which was not required 
+# I came back to my CA > Application Management > Service Application > Manage Service Application > Click on New Search App:
