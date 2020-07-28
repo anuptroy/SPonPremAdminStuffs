@@ -1,0 +1,27 @@
+Central Admin Error HTTP Error 503. The service is unavailable in SharePoint 2013 
+Monday, August 7, 2017
+5:23 PM
+ 
+Reason : Change of password by me /Password Expired
+ 
+Troubleshooting:
+Tried to update password with stsadm –o updatefarmcredentials –userlogin <domain/username> -password <new password> but did not worked 
+ 
+Then Tried to update the password manually in each server
+ 
+1. In AD:
+	Updated the PASSWORD in AD (Active Directory)
+	Under ->domain (contoso.com)->clicked Users folder->name -Administrator; type-User-In Properties-Account-check the box on password never expires
+
+
+2. In SQL Server Configuration Manager
+	Under SQL Server Services - right clicked on each service of the same domain(like Contoso\administrator) then clicked on properties 
+	and updated the password 
+	Note: Give 1st priority of password update to default instance MSSQLSERVER then to other services
+	Then restarted each services
+Tried to access the Central admin site and it restarted
+
+
+3. In IIS, Clicked on Application pools option 
+	Then by right clicking on each site on application pool->Advanced setting ->clicked on identity and by clicking on 3 ellipses-> updated the password 
+Then started each sites whatever is present in application pool by right clicking
