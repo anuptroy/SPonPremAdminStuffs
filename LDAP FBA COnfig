@@ -1,0 +1,135 @@
+ 
+Configure the Central Administration Web.Config file:
+ 
+1. Go to Internet Information services manager (IIS).
+2. Open Sites, right click the central admin site and click "Explore"
+	 
+	
+	 
+3. Double click and open the Web.Config file (Make a copy of the Web.Config file before you edit).
+4. In the <Configuration> section, find the <system.web> section and add the following example entry:
+ 
+Web.Config of Central Admin:
+<membership defaultProvider="AspNetSqlMembershipProvider">
+      <providers>
+        <add name="ContosoMemberShip" 
+             type="Microsoft.Office.Server.Security.LdapMembershipProvider, Microsoft.Office.Server, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" 
+             server="contoso.com" 
+             port="389" 
+             useSSL="false" 
+             userDNAttribute="distinguishedName" 
+             userNameAttribute="sAMAccountName" 
+             userContainer="OU=T2SE2,OU=SharePoint,DC=Contoso,DC=com" 
+             userObjectClass="person" 
+             userFilter="(ObjectClass=person)" 
+             scope="Subtree" 
+             otherRequiredUserAttributes="sn,givenname,cn" />
+      </providers>
+    </membership>
+    <roleManager enabled="true" defaultProvider="AspNetWindowsTokenRoleProvider" > 
+      <providers>
+        <add name="ContosoRoleManager" 
+             type="Microsoft.Office.Server.Security.LdapRoleProvider, Microsoft.Office.Server, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c"
+             server="contoso.com" 
+             port="389"
+             useSSL="false"
+             groupContainer="DC=Contoso,DC=com"
+             groupNameAttribute="cn"
+             groupNameAlternateSearchAttribute="samAccountName"
+             groupMemberAttribute="member"
+             userNameAttribute="sAMAccountName"
+             dnAttribute="distinguishedName"
+             groupFilter="(ObjectClass=group)"
+             userFilter="(ObjectClass=person)"
+             scope="Subtree" />
+      </providers>
+</roleManager>
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+ 
+ 
+ 
+ 
+ 
+Web.config modification for the Central admin site:
+ 
+
+======================================================================================================================================================
+ 
+ 
+Web.Config for the STS:
+ 
+<membership>
+      <providers>
+        <add name="ContosoMemberShip" 
+             type="Microsoft.Office.Server.Security.LdapMembershipProvider, Microsoft.Office.Server, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" 
+             server="contoso.com" 
+             port="389" 
+             useSSL="false" 
+             userDNAttribute="distinguishedName" 
+             userNameAttribute="sAMAccountName" 
+             userContainer="OU=T2SE2,OU=SharePoint,DC=Contoso,DC=com" 
+             userObjectClass="person" 
+             userFilter="(&amp;(ObjectClass=person))" 
+             scope="Subtree" 
+             otherRequiredUserAttributes="sn,givenname,cn" />
+      </providers>
+    </membership>
+    <roleManager enabled="true" > 
+      <providers>
+        <add name="ContosoRoleManager" 
+             type="Microsoft.Office.Server.Security.LdapRoleProvider, Microsoft.Office.Server, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c"
+             server="contoso.com" 
+             port="389"
+             useSSL="false"
+             groupContainer="DC=Contoso,DC=com"
+             groupNameAttribute="cn"
+             groupNameAlternateSearchAttribute="samAccountName"
+             groupMemberAttribute="member"
+             userNameAttribute="sAMAccountName"
+             dnAttribute="distinguishedName"
+             groupFilter="(ObjectClass=group)"
+             userFilter="(ObjectClass=person)"
+             scope="Subtree" />
+      </providers>
+    </roleManager>
+ 
+ 
+Entries to be modified in the STS web.config:
+ 
+
+===================================================================================================================================================
+ 
+Web.Config for Web Application:
+ 
+<add name="ContosoMemberShip" 
+             type="Microsoft.Office.Server.Security.LdapMembershipProvider, Microsoft.Office.Server, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" 
+             server="contoso.com" 
+             port="389" 
+             useSSL="false" 
+             userDNAttribute="distinguishedName" 
+             userNameAttribute="sAMAccountName" 
+             userContainer="OU=T2SE2,OU=SharePoint,DC=Contoso,DC=com" 
+             userObjectClass="person" 
+             userFilter="(&amp;(ObjectClass=person))" 
+             scope="Subtree" 
+             otherRequiredUserAttributes="sn,givenname,cn" />
+ 
+ 
+<add name="ContosoRoleManager" 
+             type="Microsoft.Office.Server.Security.LdapRoleProvider, Microsoft.Office.Server, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c"
+             server="contoso.com" 
+             port="389"
+             useSSL="false"
+             groupContainer="DC=Contoso,DC=com"
+             groupNameAttribute="cn"
+             groupNameAlternateSearchAttribute="samAccountName"
+             groupMemberAttribute="member"
+             userNameAttribute="sAMAccountName"
+             dnAttribute="distinguishedName"
+             groupFilter="(&amp;(ObjectClass=group))"
+             userFilter="(&amp;(ObjectClass=person))"
+             scope="Subtree" />
+ 
+Below is the screenshot where you need to add the entry:
+
