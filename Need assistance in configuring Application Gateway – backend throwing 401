@@ -1,0 +1,22 @@
+Issue Definition: Need assistance in configuring Application Gateway – backend throwing 401. 
+Resolution : 
+Ø We looked into the configuration and could see that the Application Gateway’s backend was throwing 401. 
+Ø Later you informed us that the Application works on SSL and hence configured end to end SSL.
+Ø We tried to add the status code in the Application gateway configuration, but we continued to see the same error. 
+Ø We looked into the application configuration on IIS, however were not sure about the site/page that would respond for the probe. 
+Ø We then involved my colleagues from IIS and SharePoint teams to help us. 
+Ø By then, you informed us that the issue was resolved after you configured the probe on “probe.competenz.org.nz” 
+Ø Please take a look at the below link to know more :
+	https://docs.microsoft.com/en-us/azure/application-gateway/multiple-site-overview
+	https://docs.microsoft.com/en-us/azure/application-gateway/create-multiple-sites-portal
+Since the issue has been resolved, we shall proceed with case closure as discussed. 
+Feel free to let me know if there are any further assistance required on this case or if you have any questions and I’d be glad in assisting you further.
+
+I am just writing to let you know that in spite of the case being closed, you can reach out to me if you have any queries or concern regarding the case, I would be happy to assist you. The case can be reopened anytime you want work on it or if the issue reoccurs. So please don’t hesitate to contact me, if there are any issues.
+If you want any other information regarding Microsoft Products and Technology please let me know, I would be more than happy to help you with.
+ 
+If you wish, you may share your feedback with us. Here is the alias of my Manager manand@microsoft.com 
+  
+Thank you for your patience. Have a good day!
+ 
+Regards,
