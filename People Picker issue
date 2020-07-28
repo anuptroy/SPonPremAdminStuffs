@@ -1,0 +1,21 @@
+Customer was facing issue with people picker
+When he was trying to add users he was getting prompt "Sorry we're having trouble reaching server"
+
+# we ran sharepoint management shell as an administrator
+# we ran the following command to check 
+1. $w = get-spwebapplication <WEB URL>
+
+E.g. 
+ $w = get-spwebapplication https://www.majesconet.com
+
+2. $w.peoplepickersettings
+# The we found that user have migrated website multiple times 
+# Then we decided to flush peoplepicker config with the following command
+3. stsadm -o setproperty -url <Web URL> -pn peoplepicker-searchadforests -pv “”
+
+E.g.  stsadm -o setproperty -url https://www.majesconet.com -pn peoplepicker-searchadforests -pv “”
+
+# After successfully flushing we perform IISRESET
+# ask cs to browse site and try to add users
+# now cs was able to add users
+# issue solve
