@@ -1,0 +1,42 @@
+
+Symptom
+
+When trying to find users using the SharePoint 2013 or 2016 people picker control, it spins for several seconds and then displays: 
+Sorry, we’re having trouble reaching the server
+ 
+ 
+If you take a Fiddler trace, you’ll see that the POST to the CSOM endpoint (_vti_bin/client.svc/ProcessQuery) gets stuck in an authentication loop between client.svc, _login/default.aspx, and _windows/default.aspx.
+Cause
+
+The authentication settings had been manually changed at the IIS level.
+For a Window-Claims web application, the following authentication methods must be enabled at the site level in IIS:
+·         Anonymous Authentication
+·         ASP.Net Impersonation
+·         Forms Authentication
+·         Windows Authentication
+
+Resolution
+
+Open IIS manager, select the site in question, and double click “Authentication” in the middle IIS Manager pane.
+ 
+·         Make sure Anonymous Authentication is enabled and the identity is set to “IUSR”
+·         Make sure ASP.NET Impersonation is enabled and set to impersonate “Authenticated user”
+·         Make sure Forms Authentication is enabled.
+·         Make sure Windows Authentication is enabled, and the enabled Providers agree with what is set for the web application in Central Administration (for example: NTLM).
+ 
+Note: These settings are for a Window-claims authenticated web app.  For other authentication types, I recommend you deploy an out-of-box web app using the same authentication type and compare the IIS-level settings with what the customer has.
+More Information
+
+See my blog post about different configuration problems that cause the same “Sorry, we’re having trouble reaching the server” People Picker error:
+https://blogs.technet.microsoft.com/spjr/2017/11/26/sharepoint-the-problem-with-changing-userquerymaxtimeout/ 
+
+From <https://internal.support.services.microsoft.com/en-us/help/4057756> 
+
+
+$wa = Get-SPWebApplication http://yourWebApplicationUrl
+$wa.PeoplePickerSettings
+$wa.PeoplePickerSettings.SearchActiveDirectoryDomains
+
+From <https://blogs.technet.microsoft.com/spjr/2017/11/26/sharepoint-the-problem-with-changing-userquerymaxtimeout/> 
+
+
