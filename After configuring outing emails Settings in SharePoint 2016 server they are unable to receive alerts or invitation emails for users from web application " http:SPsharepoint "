@@ -1,0 +1,13 @@
+SOLUTIION
+Issue Description:
+Unable to receive invitation or alerts emails for any users from web application " http://sharepoint "
+Possible Cause:
+Use TLS Connection Encryption, Setting was not proper 
+ 
+Resolution Summary:
+ 
+· in Central Administration’ s Application Management > Web Application > Manage Web Application
+· Select web application http://sharepoint 
+· General Settings > Outgoing Email >Use TLS Connection Encryption : No
+· We change value for  Use TLS Connection Encryption = YES 
+· After making this change issue got resolved 
