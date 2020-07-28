@@ -1,0 +1,15 @@
+SOLUTION:
+
+1. Open the registry editor (run -> regedit.exe)
+2. Navigate to: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\HTTP\Parameters
+3. Right-click the Pane to the right and select New -> DWORD value
+4. Enter "MaxFieldLength" for the name and "65534" for the value. Select Decimal as the Base, then click OK
+5. Create another DWORD value in the same way, with the name MaxRequestBytes and use the same value(VALUE: 415028), then click OK
+6. Close the registry editor and open the command prompt under the administrator context (i.e. right-click, run as administrator)
+7. Type the following command: net stop http
+8. Hit Enter and wait for the command to finish processing
+9. Type the following command: net start http 
+10. Hit Enter and wait for the command to finish processing
+11. Type the following command: iisreset
+12. Hit Enter and wait for the command to finish processing
+13. Test again. IIS should now allow for a larger header in the request.
