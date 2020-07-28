@@ -1,0 +1,93 @@
+Resolution Summary:
+ 
+· We have perform the following steps in order to resolve this issue:
+ 
+· We configure New Relying Party Trust on ADFS Server.
+ 
+· Deleted Old SPClaim with the below steps:
+ 
+	Remove-SPClaimProvider ADFS
+ 
+	Remove-SPTrustedIdentityTokenIssuer ADFS 
+ 
+· Created New SP Claim:
+ 
+	$emailClaimMap = New-SPClaimTypeMapping -IncomingClaimType “http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress” -IncomingClaimTypeDisplayName “EmailAddress” -SameAsIncoming
+ 
+	$DisplayName = New-SPClaimTypeMapping -IncomingClaimType “http://schemas.xmlsoap.org/ws/2005/05/identity/claims/displayname” -IncomingClaimTypeDisplayName “Name” -SameAsIncoming
+ 
+	$ap = Get-SPTrustedIdentityTokenIssuer -Name “ADFS2.0” -Description “AD Federation Server” -realm $realm -ImportTrustCertificate $cert -ClaimsMappings $DisplayName -SignInUrl $signInURL -IdentifierClaim $DisplayName.InputClaimType
+ 
+· After all of the above steps you were successfully able to log in with ADFS.
+ 
+· Adding more claims after the trusted provider is created. Example is below of adding a role claim.
+ 
+	$ap = Get-SPTrustedIdentityTokenIssuer "ADFS2.0"
+	 
+	$ap.ClaimTypes.Add("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname")
+	 
+	$map = New-SPClaimTypeMapping "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" -IncomingClaimTypeDisplayName "Role"-SameAsIncoming
+	 
+	$ap.AddClaimTypeInformation($map)
+	 
+	$ap.Update()
+ 
+· Above commands executed successfully:
+ 
+· More claims after the trusted provider is created. Example is below of adding a role claim.
+ 
+	$ap = Get-SPTrustedIdentityTokenIssuer "ADFS2.0"
+ 
+	$ap.ClaimTypes.Add("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+ 
+	$map = New-SPClaimTypeMapping "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" -IncomingClaimTypeDisplayName "NameIdentifier"-SameAsIncoming
+ 
+	$ap.AddClaimTypeInformation($map)
+ 
+	$ap.Update()
+ 
+· Below throw the Error after this command:
+ 
+	$map = New-SPClaimTypeMapping "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" -IncomingClaimTypeDisplayName "NameIdentifier"-SameAsIncoming
+	 
+	New-SPClaimTypeMapping : The mapping is not allowed as the claim type
+	http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier is a
+	reserved claim type.
+	At line:1 char:8
+	+ $map = New-SPClaimTypeMapping
+	"http://schemas.xmlsoap.org/ws/2005/05/identity/cl ...
+	+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	+ CategoryInfo          : InvalidArgument: (http://schemas..../nameidentif
+	ier:String) [New-SPClaimTypeMapping], PSArgumentException
+	+ FullyQualifiedErrorId : Microsoft.SharePoint.PowerShell.SPCmdletNewSPCla
+	imMapping
+ 
+· Providing New set of commands:
+ 
+	$ap = Get-SPTrustedIdentityTokenIssuer "ADFS2.0"
+ 
+	$ap.ClaimTypes.Add("http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname")
+ 
+	$map = New-SPClaimTypeMapping "http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" -IncomingClaimTypeDisplayName "Windows Account Name"-SameAsIncoming
+ 
+	$ap.AddClaimTypeInformation($map)
+ 
+	$ap.Update()
+ 
+· check the behavior for only given name users
+ 
+· we added users at site collection level
+ 
+· after which user was able to login with user name in adfs2.0
+ 
+· Issue fixed
+ 
+More Information: 
+ 
+https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/technical-reference/the-role-of-claims
+ 
+https://blogs.technet.microsoft.com/adamsorenson/2018/01/17/sharepoint-20132016-migrate-from-windows-claims-to-adfs/ 
+ 
+https://gallery.technet.microsoft.com/office/Setp-by-Step-Install-and-d80ae5d3 
+ 
+https://blogit.create.pt/miguelmoreno/2014/11/14/configure-adfs-3-0-with-sharepoint-2013/
