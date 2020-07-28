@@ -1,0 +1,18 @@
+Worked Script
+
+Enable-PSRemoting -Force
+$pw = convertto-securestring -AsPlainText -Force -String “PASSWORD”
+$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist SHAREPOINTACCOUNT,$pw 
+$session = New-PSSession -computername "SPSERVER" -Authentication CredSSP -Credential $cred
+Invoke-Command -Session $session -ScriptBlock{Add-PsSnapin Microsoft.SharePoint.PowerShell
+$Sol= Get-SPSolution
+if($Sol -eq $null)
+{
+Write-Host -ForegroundColor Red "No Solutions installed in the farm"
+}
+Else
+{
+Write-Host -ForegroundColor Green "Listing installed solutions in the farm"
+$Sol|fl
+}
+}
