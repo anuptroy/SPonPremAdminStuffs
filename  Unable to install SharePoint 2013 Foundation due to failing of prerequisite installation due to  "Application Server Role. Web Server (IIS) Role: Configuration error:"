@@ -1,0 +1,53 @@
+SOLUTION
+
+>  Called Ashutosh and was able to connect.
+> KRA: 
+Customer needs to install SharePoint 2013 on windows server 2012 R2.
+
+> Checked customer has already downloaded SharePoint server 2013 RTM on the machine.
+> We tried installation of the prerequisite and it failed on the IIS server role installation.
+
+Log:
+2018-01-31 10:47:34 - SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired
+2018-01-31 10:47:34 - Error: The tool was unable to install Application Server Role, Web Server (IIS) Role.
+2018-01-31 10:47:34 - Last return code (2)
+=======================
+
+> Rebooted the server and checked again 
+> Failed on the same state.
+> Tried Installation again from powershell as offline installation:
+Ran below commands:
+Import-Module ServerManager
+
+Add-WindowsFeature Net-Framework-Features,Web-Server,Web-WebServer,Web-Common-Http,Web-Static-Content,Web-Default-Doc,Web-Dir-Browsing,Web-Http-Errors,Web-App-Dev,Web-Asp-Net,Web-Net-Ext,Web-ISAPI-Ext,Web-ISAPI-Filter,Web-Health,Web-Http-Logging,Web-Log-Libraries,Web-Request-Monitor,Web-Http-Tracing,Web-Security,Web-Basic-Auth,Web-Windows-Auth,Web-Filtering,Web-Digest-Auth,Web-Performance,Web-Stat-Compression,Web-Dyn-Compression,Web-Mgmt-Tools,Web-Mgmt-Console,Web-Mgmt-Compat,Web-Metabase,Application-Server,AS-Web-Support,AS-TCP-Port-Sharing,AS-WAS-Support, AS-HTTP-Activation,AS-TCP-Activation,AS-Named-Pipes,AS-Net-Framework,WAS,WAS-Process-Model,WAS-NET-Environment,WAS-Config-APIs,Web-Lgcy-Scripting,Windows-Identity-Foundation,Server-Media-Foundation,Xps-Viewer –Source
+D:\sources\sxs
+
+> This completed successfully.
+> So we tried the prereq installation, which failed on the same state.
+=======================
+
+> When asked cx about the ISO download, customer was not sure about the source of it.
+> So we rechecked customers requirement.
+> He wanted to install SharePoint 2013 Foundation for a single server installation.
+
+> So we downloaded the SharePoint Foundation 2013 with SP1 from : https://www.microsoft.com/en-in/download/details.aspx?id=42039 
+> Started installation of the same, prereqs installed successfully.
+> Then started installation of SharePoint setup which failed at "The product requires Microsoft .NET Framework 4.5"
+> Even after uninstall of the dot net updates, we were failing on the same steps.
+> After multiple attempts 
+> Followed below method to get it working 
+> Run regedit.exe as administrator
+> Navigate to HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4
+> Right-click the v4 node, click Export, and save the export file somewhere safe - you will need it later
+> Right-click the v4 node and click Permissions
+> Click Advanced
+> Change the Owner to your administrator account, tick "Replace owner on subcontainers and objects", and click OK
+> Go through each node under v4 and:
+> Right-click the node and click Permissions
+> Set your administrator account to have Full Control and click OK
+> Change any Version value you find from 4.6.x to 4.5.x (I used 4.5.51209)
+> Ran setup for SharePoint 2013 and we see the "Run Configuration Wizard" screen.
+> Completed the setup in single server mode.
+> Ran PSCONFIG which completed successfully.
+> Issue resolved.
+. Took Closure of the ticket and customer approved the same
