@@ -1,0 +1,10 @@
+SOLUTION
+
+We followed the below steps to resolve the issue.
+ 
+· Created a new Secure Store Service Application
+· Select Generate New Key to enter the Pass Phrase >> Created Secure Store Target Application specifying Target Application ID, Target Application Type as Group
+· Add the Farm account under Target Application Administrator and Domain users group under Members
+· Set Credentials for Target Application and selected SA account 
+· Edit the External Content Type Connection and selected the new Target Application ID 
+· Access the External Lists and it was able to fetch the metadata from the database.
