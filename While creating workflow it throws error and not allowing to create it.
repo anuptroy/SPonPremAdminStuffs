@@ -1,0 +1,10 @@
++then we navigated to web.config of that web application where the Workflow setting was not functioning and throwing error
++under the section :
+
+<trust level="Full" originUrl="" legacyCasModel="true" />
+
++we replace the value from "true to "false"
++after making this change ans saving it at web.config level
++we ask to check the behavior
++now workflow setting was functioning properly without getting error
++case is solved and good to close
