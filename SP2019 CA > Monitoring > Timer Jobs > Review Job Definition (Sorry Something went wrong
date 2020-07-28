@@ -1,0 +1,372 @@
+ 
+While Accessing SP2019 CA > Monitoring > Timer Jobs > Review Job Definition (Sorry Something went wrong) : Alon with Correlation ID: 
+ 
+Hence Collected ULA Logs in Verbose mode > With Correlation ID 
+ 
+Given Below  
+ 
+# Set Log Level to verbose 
+Set-sploglevel –traceseverity verbose –eventseverity verbose 
+ 
+New-splogfile 
+ 
+# Capture Start time 
+$start = get-date 
+ 
+############# 
+Reproduce the Issue 
+############# 
+ 
+# Capture End Time 
+$end = get-date 
+ 
+# Set Log level to Default 
+Clear-sploglevel 
+ 
+ 
+# Merge-SPLogFile -Correlation "Correlation ID" -Path "C:\Merged.txt" 
+ 
+ 
+======================================================================================================= 
+ 
+GOT THE BELOW TRACES with Correlation ID  
+ 
+ 
+10/16/2019 00:27:48.05 w3wp.exe (SP2016SRV01:0x0C5C) 0x1950 SharePoint Foundation General b1162 Verbose SPContext.GetContext: Creating new SPContext StackTrace:    
+at Microsoft.SharePoint.SPContext.GetContext(HttpContext context)      
+at Microsoft.SharePoint.SPContext.get_Current()      
+at Microsoft.SharePoint.SPWebPartCollectionInitialState.SPWebPartCollectionInitialStateCore(WebPartDataOrigin dataOrigin, SPWeb web, Uri pageUrl, String serverRelativeUrl, PageView pageView, UserMode initialUserMode, Boolean includeHidden, Boolean forRender, Boolean canCustomizePages, Boolean canPersonalizeWebParts, Boolean canAddDeleteWebParts, HttpContext context)     at Microsoft.SharePoint.SPWebPartCollectionInitialState..ctor(SPWeb web, Uri pageUrl, PageView pageView, Int32 count, Object[,] resultSet, Boolean includeHidden, Boolean forRender, HttpContext context)     at Microsoft.SharePoint.WebPartPages.SPWebPartManager.SPWebPartManagerCore(SPWebPartCollectionInitialState initialState)     at ASP._admin_admin_master.__BuildControlDeltaSPWebPartManager()     at ASP._admin_admin_master.__BuildControl__control26()     at ASP._admin_admin_master.__BuildControlSPHtmlTag()     at ASP._admin_admin_master.__BuildControlTree(_admin_admin_master __ctrl)     at System.Web.UI.MasterPage.CreateMaster(TemplateControl owner, HttpContext context, VirtualPath masterPageFile, IDictionary contentTemplateCollection)      
+at System.Web.UI.Page.get_Master()      
+at System.Web.UI.Page.ApplyMasterPage()      
+at System.Web.UI.Page.PerformPreInit()      
+at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)      
+at System.Web.UI.Page.ProcessRequest(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)      
+at System.Web.UI.Page.ProcessRequest()      
+at System.Web.UI.Page.ProcessRequest(HttpContext context)      
+at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()      
+at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)      
+at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)      
+at System.Web.HttpApplication.PipelineStepManager.ResumeSteps(Exception error)      
+at System.Web.HttpApplication.BeginProcessRequestNotification(HttpContext context, AsyncCallback cb)      
+at System.Web.HttpRuntime.ProcessRequestNotificationPrivate(IIS7WorkerRequest wr, HttpContext context)      
+at System.Web.Hosting.PipelineRuntime.ProcessRequestNotificationHelper(IntPtr rootedObjectsPointer, IntPtr nativeRequestContext, IntPtr moduleData, Int32 flags)      
+at System.Web.Hosting.PipelineRuntime.ProcessRequestNotification(IntPtr rootedObjectsPointer, IntPtr nativeRequestContext, IntPtr moduleData, Int32 flags)      
+at System.Web.Hosting.UnsafeIISMethods.MgdIndicateCompletion(IntPtr pHandler, RequestNotificationStatus& notificationStatus)      
+at System.Web.Hosting.UnsafeIISMethods.MgdIndicateCompletion(IntPtr pHandler, RequestNotificationStatus& notificationStatus)      
+at System.Web.Hosting.PipelineRuntime.ProcessRequestNotificationHelper(IntPtr rootedObjectsPointer, IntPtr nativeRequestContext, IntPtr moduleData, Int32 flags)      
+at System.Web.Hosting.PipelineRuntime.ProcessRequestNotification(IntPtr rootedObjectsPointer, IntPtr nativeRequestContext, IntPtr moduleData, Int32 flags) 405a0e9f-b5d4-4097-2b45-64f9614b53bc 
+ 
+ 
+10/16/2019 00:27:48.09 w3wp.exe (SP2016SRV01:0x0C5C) 0x1950 SharePoint Foundation General 8nca Medium Application error when access /_admin/ServiceJobDefinitions.aspx, Error=Operation is not valid due to the current state of the object.    
+at Microsoft.Office.Server.Administration.UserProfileApplicationJob.get_UserProfileApplication()      
+at Microsoft.Office.Server.Administration.UserProfileApplicationJob.get_DisplayName()      
+at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddRow(SPJobDefinition jd, DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddService(SPService service, DataTable table, DataSourceSelectArguments selectArguments)     
+ at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddFarm(SPFarm farm, DataTable table, DataSourceSelectArguments selectArguments)     
+ at Microsoft.SharePoint.WebControls.TimerJobDataSourceView.FillDataTable(DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.WebControls.DataTableDataSourceView.Select(DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.WebControls.AdministrationDataSourceView.ExecuteSelect(DataSourceSelectArguments arguments)      
+at System.Web.UI.DataSourceView.Select(DataSourceSelectArguments arguments, DataSourceViewSelectCallback callback)     
+ at System.Web.UI.WebControls.BaseDataBoundControl.EnsureDataBound()      
+at System.Web.UI.WebControls.CompositeDataBoundControl.CreateChildControls()      
+at System.Web.UI.Control.EnsureChildControls()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint) 405a0e9f-b5d4-4097-2b45-64f9614b53bc 
+ 
+ 
+10/16/2019 00:27:48.09 w3wp.exe (SP2016SRV01:0x0C5C) 0x1950 SharePoint Foundation Runtime tkau Unexpected System.InvalidOperationException: Operation is not valid due to the current state of the object.    
+ at Microsoft.Office.Server.Administration.UserProfileApplicationJob.get_UserProfileApplication()     
+ at Microsoft.Office.Server.Administration.UserProfileApplicationJob.get_DisplayName()      
+at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddRow(SPJobDefinition jd, DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddService(SPService service, DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddFarm(SPFarm farm, DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.WebControls.TimerJobDataSourceView.FillDataTable(DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.WebControls.DataTableDataSourceView.Select(DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.WebControls.AdministrationDataSourceView.ExecuteSelect(DataSourceSelectArguments arguments)      
+at System.Web.UI.DataSourceView.Select(DataSourceSelectArguments arguments, DataSourceViewSelectCallback callback)      
+at System.Web.UI.WebControls.BaseDataBoundControl.EnsureDataBound()      
+at System.Web.UI.WebControls.CompositeDataBoundControl.CreateChildControls()      
+at System.Web.UI.Control.EnsureChildControls()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint) 405a0e9f-b5d4-4097-2b45-64f9614b53bc 
+ 
+ 
+10/16/2019 00:27:48.09 w3wp.exe (SP2016SRV01:0x0C5C) 0x1950 SharePoint Foundation General ajlz0 High Getting Error Message for Exception System.Web.HttpUnhandledException (0x80004005): Exception of type 'System.Web.HttpUnhandledException' was thrown. ---> System.InvalidOperationException: Operation is not valid due to the current state of the object.      
+at Microsoft.Office.Server.Administration.UserProfileApplicationJob.get_UserProfileApplication()      
+at Microsoft.Office.Server.Administration.UserProfileApplicationJob.get_DisplayName()      
+at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddRow(SPJobDefinition jd, DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddService(SPService service, DataTable table, DataSourceSelectArguments selectArguments)     
+ at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddFarm(SPFarm farm, DataTable table, DataSourceSelectArguments selectArguments)   
+at Microsoft.SharePoint.WebControls.TimerJobDataSourceView.FillDataTable(DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.WebControls.DataTableDataSourceView.Select(DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.WebControls.AdministrationDataSourceView.ExecuteSelect(DataSourceSelectArguments arguments)      
+at System.Web.UI.DataSourceView.Select(DataSourceSelectArguments arguments, DataSourceViewSelectCallback callback)      
+at System.Web.UI.WebControls.BaseDataBoundControl.EnsureDataBound()      
+at System.Web.UI.WebControls.CompositeDataBoundControl.CreateChildControls()      
+at System.Web.UI.Control.EnsureChildControls()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)      
+at System.Web.UI.Page.HandleError(Exception e)      
+at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)      
+at System.Web.UI.Page.ProcessRequest(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)      
+at System.Web.UI.Page.ProcessRequest()      
+at System.Web.UI.Page.ProcessRequest(HttpContext context)      
+at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()      
+at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)      
+at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously) 405a0e9f-b5d4-4097-2b45-64f9614b53bc 
+ 
+ 
+10/16/2019 00:27:48.10 w3wp.exe (SP2016SRV01:0x0C5C) 0x1950 SharePoint Foundation Upgrade bbv5q Verbose MakeBrowserCacheSafeLayoutsUrl: either an layouts or AxdReference name: /ScriptResource.axd?d=i5EDkZap282mEP5TU3feG0bL6Z2mEDYt7NvBtcPdzqrXDhXu0GwSNrAxmQ2Hi82C9olESjIAQ3lHeZEi_yoV3KPGfrnprfdYEalVQkWiVwc-yiFqHgJEQgOXjC-CtLUoXPVrV3sWAjqwjCbqX1dymWo2Z_6tmgAPupsTnTWkBn96TAppIPhYqYyzOn3c6CTs0&t=ffffffff999c3159, StackTrace:     
+at System.Environment.GetStackTrace(Exception e, Boolean needFileInfo)     
+ at System.Environment.get_StackTrace()     
+ at Microsoft.SharePoint.Utilities.SPUtility.MakeBrowserCacheSafeLayoutsUrl(String name, String sideBySideToken, Boolean localizable, Int32 desiredVersion)      
+at Microsoft.SharePoint.WebControls.ScriptLink.ScriptLinkInfo.ToScriptUrl(Boolean useDebugJs)     
+ at Microsoft.SharePoint.WebControls.ScriptLink.ScriptLinkInfo.ToScriptBlock(Page page)      
+at Microsoft.SharePoint.WebControls.ScriptLink.RenderScriptBlockInternal(Control ctrl, Page page, Boolean afterUI, HtmlTextWriter writer, Boolean deltaPage, Boolean noRenderAxdScripts, Boolean renderJSLinkScript)      
+at Microsoft.SharePoint.WebControls.ScriptLink.RenderScriptBlock(Control ctrl, Page page, HtmlTextWriter writer, Boolean afterUI, Boolean noRenderAxdScripts, Boolean renderJSLinkScript)      
+at Microsoft.SharePoint.WebControls.ScriptLink.Render(HtmlTextWriter writer)      
+at System.Web.UI.Control.RenderControlInternal(HtmlTextWriter writer, ControlAdapter adapter)      
+at System.Web.UI.Control.RenderChildrenInternal(HtmlTextWriter writer, ICollection children)      
+at System.Web.UI.HtmlControls.HtmlHead.RenderChildren(HtmlTextWriter writer)      
+at System.Web.UI.HtmlControls.HtmlContainerControl.Render(HtmlTextWriter writer)      
+at System.Web.UI.Control.RenderControlInternal(HtmlTextWriter writer, ControlAdapter adapter)      
+at System.Web.UI.Control.RenderChildrenInternal(HtmlTextWriter writer, ICollection children)      
+at System.Web.UI.HtmlControls.HtmlContainerControl.Render(HtmlTextWriter writer)      
+at System.Web.UI.Control.RenderControlInternal(HtmlTextWriter writer, ControlAdapter adapter)      
+at System.Web.UI.Control.RenderChildrenInternal(HtmlTextWriter writer, ICollection children)      
+at System.Web.UI.Control.RenderControlInternal(HtmlTextWriter writer, ControlAdapter adapter)      
+at System.Web.UI.Control.RenderChildrenInternal(HtmlTextWriter writer, ICollection children)      
+at System.Web.UI.Page.Render(HtmlTextWriter writer)      
+at Microsoft.SharePoint.WebControls.DeltaPage.RenderToBase(HtmlTextWriter writer)      
+at Microsoft.SharePoint.WebControls.DeltaPage.Render(HtmlTextWriter writer)      
+at System.Web.UI.Control.RenderControlInternal(HtmlTextWriter writer, ControlAdapter adapter)      
+at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)      
+at System.Web.UI.Page.ProcessRequest(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)      
+at System.Web.UI.Page.ProcessRequest()      
+at System.Web.UI.Page.ProcessRequest(HttpContext context)      
+at System.Web.HttpServerUtility.ExecuteInternal(IHttpHandler handler, TextWriter writer, Boolean preserveForm, Boolean setPreviousPage, VirtualPath path, VirtualPath filePath, String physPath, Exception error, String queryStringOverride)     
+ at System.Web.HttpServerUtility.Execute(String path, TextWriter writer, Boolean preserveForm)      
+at System.Web.HttpServerUtility.Transfer(String path, Boolean preserveForm)     
+ at System.Web.HttpServerUtility.Transfer(String path)      
+at Microsoft.SharePoint.Utilities.SPUtility.TransferToErrorPageInternal(String title, String message, String linkText, String linkUrl, Int32 statusCode)      
+at Microsoft.SharePoint.ApplicationRuntime.SPRequestModule.ErrorHandler(HttpApplication app, Boolean errorIsOnErrorPage)      
+at Microsoft.SharePoint.ApplicationRuntime.SPRequestModule.ErrorAppHandler(Object oSender, EventArgs ea)      
+at System.EventHandler.Invoke(Object sender, EventArgs e)      
+at System.Web.HttpApplication.RaiseOnError()      
+at System.Web.HttpApplication.RecordError(Exception error)      
+at System.Web.HttpApplication.PipelineStepManager.ResumeSteps(Exception error)      
+at System.Web.HttpApplication.BeginProcessRequestNotification(HttpContext context, AsyncCallback cb)      
+at System.Web.HttpRuntime.ProcessRequestNotificationPrivate(IIS7WorkerRequest wr, HttpContext context)      
+at System.Web.Hosting.PipelineRuntime.ProcessRequestNotificationHelper(IntPtr rootedObjectsPointer, IntPtr nativeRequestContext, IntPtr moduleData, Int32 flags)      
+at System.Web.Hosting.PipelineRuntime.ProcessRequestNotification(IntPtr rootedObjectsPointer, IntPtr nativeRequestContext, IntPtr moduleData, Int32 flags)      
+at System.Web.Hosting.UnsafeIISMethods.MgdIndicateCompletion(IntPtr pHandler, RequestNotificationStatus& notificationStatus)      
+at System.Web.Hosting.UnsafeIISMethods.MgdIndicateCompletion(IntPtr pHandler, RequestNotificationStatus& notificationStatus)      
+at System.Web.Hosting.PipelineRuntime.ProcessRequestNotificationHelper(IntPtr rootedObjectsPointer, IntPtr nativeRequestContext, IntPtr moduleData, Int32 flags)      
+at System.Web.Hosting.PipelineRuntime.ProcessRequestNotification(IntPtr rootedObjectsPointer, IntPtr nativeRequestContext, IntPtr moduleData, Int32 flags) 405a0e9f-b5d4-4097-2b45-64f9614b53bc 
+ 
+ 
+10/16/2019 00:27:52.33 w3wp.exe (SP2016SRV01:0x0C5C) 0x1950 SharePoint Foundation Authentication Authorization a7r50 Verbose RunWithElevated:     
+at Microsoft.SharePoint.SPSecurity.RunWithElevatedPrivileges(WaitCallback secureCode, Object param)      
+at Microsoft.SharePoint.SPSecurity.RunWithElevatedPrivileges(CodeToRunElevated secureCode)      
+at Microsoft.SharePoint.Utilities.SequenceNumbers.SequenceDataReaderWriter.WriteData(Int32 sequenceNumber, DateTime timestamp)      
+at Microsoft.SharePoint.Utilities.SequenceNumbers.SequenceNumberCore.PersistCurrentValue()      
+at Microsoft.SharePoint.Utilities.SequenceNumbers.SequenceNumberAgent.UpdatePersistedSequenceCount()      
+at Microsoft.SharePoint.Utilities.SequenceNumbers.SequenceNumberAgent.<Start>b__3(Object state)      
+at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)      
+at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)      
+at System.Threading.TimerQueueTimer.CallCallback()      
+at System.Threading.TimerQueueTimer.Fire()      
+at System.Threading.QueueUserWorkItemCallback.System.Threading.IThreadPoolWorkItem.ExecuteWorkItem()      
+at System.Threading.ThreadPoolWorkQueue.Dispatch() 405a0e9f-b5d4-4097-2b45-64f9614b53bc 
+ 
+10/16/2019 00:27:48.09 w3wp.exe (SP2016SRV01:0x0C5C) 0x1950 SharePoint Foundation General ajlz0 High Getting Error Message for Exception System.Web.HttpUnhandledException (0x80004005): Exception of type 'System.Web.HttpUnhandledException' was thrown. ---> System.InvalidOperationException: Operation is not valid due to the current state of the object.      
+at Microsoft.Office.Server.Administration.UserProfileApplicationJob.get_UserProfileApplication()     
+ at Microsoft.Office.Server.Administration.UserProfileApplicationJob.get_DisplayName()     
+ at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddRow(SPJobDefinition jd, DataTable table, DataSourceSelectArguments selectArguments)     
+ at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddService(SPService service, DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddFarm(SPFarm farm, DataTable table, DataSourceSelectArguments selectArguments)   
+at Microsoft.SharePoint.WebControls.TimerJobDataSourceView.FillDataTable(DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.WebControls.DataTableDataSourceView.Select(DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.WebControls.AdministrationDataSourceView.ExecuteSelect(DataSourceSelectArguments arguments)      
+at System.Web.UI.DataSourceView.Select(DataSourceSelectArguments arguments, DataSourceViewSelectCallback callback)      
+at System.Web.UI.WebControls.BaseDataBoundControl.EnsureDataBound()      
+at System.Web.UI.WebControls.CompositeDataBoundControl.CreateChildControls()      
+at System.Web.UI.Control.EnsureChildControls()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)      
+at System.Web.UI.Page.HandleError(Exception e)      
+at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)      
+at System.Web.UI.Page.ProcessRequest(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)      
+at System.Web.UI.Page.ProcessRequest()      
+at System.Web.UI.Page.ProcessRequest(HttpContext context)      
+at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()      
+at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)      
+at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously) 405a0e9f-b5d4-4097-2b45-64f9614b53bc 
+ 
+ 
+ 
+ 
+ 
+ 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+ 
+With Below Reference perform Research In Google: 
+ 
+10/16/2019 00:27:48.09 w3wp.exe (SP2016SRV01:0x0C5C) 0x1950 SharePoint Foundation General 8nca Medium Application error when access /_admin/ServiceJobDefinitions.aspx, Error=Operation is not valid due to the current state of the object.    
+at Microsoft.Office.Server.Administration.UserProfileApplicationJob.get_UserProfileApplication()      
+at Microsoft.Office.Server.Administration.UserProfileApplicationJob.get_DisplayName()      
+at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddRow(SPJobDefinition jd, DataTable table, DataSourceSelectArguments selectArguments)     
+ at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddService(SPService service, DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.ApplicationPages.JobDefinitionsDataSourceView.AddFarm(SPFarm farm, DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.WebControls.TimerJobDataSourceView.FillDataTable(DataTable table, DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.WebControls.DataTableDataSourceView.Select(DataSourceSelectArguments selectArguments)      
+at Microsoft.SharePoint.WebControls.AdministrationDataSourceView.ExecuteSelect(DataSourceSelectArguments arguments)     
+ at System.Web.UI.DataSourceView.Select(DataSourceSelectArguments arguments, DataSourceViewSelectCallback callback)      
+at System.Web.UI.WebControls.BaseDataBoundControl.EnsureDataBound()      
+at System.Web.UI.WebControls.CompositeDataBoundControl.CreateChildControls()      
+at System.Web.UI.Control.EnsureChildControls()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Control.PreRenderRecursiveInternal()      
+at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint) 405a0e9f-b5d4-4097-2b45-64f9614b53bc 
+ 
+ 
+------------------------------------------------------------------------ 
+ 
+SOLUTION 
+ 
+Got the following Article and followed the steps provided below: 
+ 
+https://social.technet.microsoft.com/Forums/en-US/45cd502a-580d-49ab-85bb-e5ab10294474/review-job-definitions-in-ca-operation-is-not-valid-due-to-the-current-state-of-the-operation?forum=sharepointadminprevious 
+ 
+Not good to use links to describe the steps... it's since been removed. 
+ 
+For anyone coming across this in the future and wanting to know exactly how it's done: 
+ 
+• Get-SPTimerJob | where {$_.DisplayName -like ""} | fl | out-file -filepath "C:\timerjobs.txt" 
+ 
+• Then you have to open that file in Notepad and grab each ID individually from each job and do this manually for each one: 
+ 
+• $job = Get-SPTimerJob -id insertGUIDhere 
+ 
+• $job.Delete() 
+ 
+• Then the Timer Job Definition page will open. 
+ 
+-------------------------------------------------------------------------------- 
+ 
+Below are the list of IDs which I got while executing commands:  
+ 
+ 
+$job = Get-SPTimerJob -id 04878f54-81a5-4bc8-b953-408b5a9cc956 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 077c23e5-d6d2-4442-b8d0-717a0a7e1c44 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 11d427ee-8807-454f-972e-b98973aaaec4 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 191d12c8-4f08-43e7-be33-af462eb94db9 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 2ac28b98-14e2-4d04-9fa1-0a5eab9443f9 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 2ac28b98-14e2-4d04-9fa1-0a5eab9443f9 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 2f930c6d-f882-486d-a1f9-2e5a588d0c30 
+$job.Delete() 
+ 
+ 
+$job = Get-SPTimerJob -id 4de26b71-717f-4da7-ad1f-15232fea42f1 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 58b57f0b-1140-4eb1-8a3c-3e4ed9acbbd1 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 5924c4da-7e52-449b-aa3b-c7d8c6de3d17 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 6acbe690-49ad-4fad-82c1-510d19cf26ba 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 73ab23a0-2835-4c19-b290-32f37c176116 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 74520a6b-e3b7-44eb-94c8-cdcb321f9dd8 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 7edc5003-7fc3-437f-aed7-c907d328cc06 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 74520a6b-e3b7-44eb-94c8-cdcb321f9dd8 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 90ff29cd-dc7f-46c1-bf93-334f6730345c 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 90ff29cd-dc7f-46c1-bf93-334f6730345c 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 94b51d6b-c9ab-44af-81ef-b25f3a3f7320 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id 9fd85747-25bf-4238-9569-af575579265c 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id adc1b195-c55c-4901-b8d8-431b19267465 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id af106b5c-5f7d-4812-b39b-0a0e16bd93de 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id bbf62ef8-0cad-45d0-bbaa-4016fa075f04 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id c125a7fa-e2f9-4917-a4d2-6f7af9ffd630 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id c6d7ebc2-ff95-4d4d-9e92-5ae622ba1fc5 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id d900d31f-8e37-4400-8b86-78492202ea2d 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id e71f5754-3b32-4797-a702-595356035434 
+$job.Delete() 
+ 
+$job = Get-SPTimerJob -id fc78377f-e642-4ae2-b841-8583a0dfff2c 
+$job.Delete() 
+
+From <https://onenote.officeapps.live.com/o/onenoteframe.aspx?edit=0&ui=en-US&rs=en-IN&hid=1UzDSkHN90GL3LfamrTArA.0&WOPISrc=https%3A%2F%2Fwopi.onedrive.com%2Fwopi%2Ffolders%2F6DCDE66B4D6E2E6E%213182&wdo=2&sc=host%3D%26qt%3DFolders&mscc=1&wdp=0> 
+
