@@ -1,0 +1,14 @@
+Share{Point was unable to resolve users from AD
+
+Thus perform the below commands:
+
+# https://joelblogs.co.uk/2011/06/02/sharepoint-2010-peoplepicker-not-finding-active-directory-users/
+
+$site = get-spsite "<SITE>"
+$site.UserAccountDirectoryPath
+
+Set-SPSite -Identity "<SITE>" -UserAccountDirectoryPath ""
+
+IISRESET
+
+Now we were able to get user resolve
